@@ -2573,52 +2573,57 @@ async function startLoad() {
     document.getElementById('s-gyms').textContent = gyms.length;
   }
 
-  // ══ FASE 1: OVERPASS API — OSM data voor heel Duitsland ══
-  // Strategie: bbox-query voor heel DE (geen area lookup die kan falen)
-  // Opgesplitst in 4 kwadranten om timeout te vermijden
-
+  // ══ FASE 1: OVERPASS API — OSM data in 9 kleinere kwadranten ══
   var overpassBase = 'https://overpass-api.de/api/interpreter';
+  var altOverpass = 'https://overpass.kumi.systems/api/interpreter';
 
-  // DE bounding box opgesplitst in 4 kwadranten
+  // 9 kleinere kwadranten voor snellere queries (minder data per call)
   var kwadranten = [
-    {name:'NW-DE', s:51.0, n:55.2, w:5.8,  e:10.5},
-    {name:'NO-DE', s:51.0, n:55.2, w:10.5, e:15.2},
-    {name:'SW-DE', s:47.2, n:51.0, w:5.8,  e:10.5},
-    {name:'SO-DE', s:47.2, n:51.0, w:10.5, e:15.2},
+    {name:'NW1', s:53.0, n:55.2, w:5.8,  e:10.5},
+    {name:'NW2', s:51.0, n:53.0, w:5.8,  e:10.5},
+    {name:'NO1', s:53.0, n:55.2, w:10.5, e:15.2},
+    {name:'NO2', s:51.0, n:53.0, w:10.5, e:15.2},
+    {name:'MW1', s:49.5, n:51.0, w:5.8,  e:10.5},
+    {name:'MW2', s:49.5, n:51.0, w:10.5, e:15.2},
+    {name:'SW',  s:47.2, n:49.5, w:5.8,  e:9.0 },
+    {name:'SM',  s:47.2, n:49.5, w:9.0,  e:12.0},
+    {name:'SO',  s:47.2, n:49.5, w:12.0, e:15.2},
   ];
+
+  async function overpassQuery(kw) {
+    var bbox = kw.s+','+kw.w+','+kw.n+','+kw.e;
+    var q = '[out:json][timeout:40][bbox:'+bbox+'];(node["leisure"="fitness_centre"];way["leisure"="fitness_centre"];node["amenity"="gym"];way["amenity"="gym"];);out center;';
+    var body = 'data='+encodeURIComponent(q);
+    var opts = {method:'POST',mode:'cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body};
+    // Probeer primaire server, dan alternatief
+    try {
+      var r = await fetchWithTimeout(overpassBase, opts, 45000);
+      if (r.ok) return (await r.json()).elements||[];
+      throw new Error('HTTP '+r.status);
+    } catch(e1) {
+      try {
+        var r2 = await fetchWithTimeout(altOverpass, opts, 45000);
+        if (r2.ok) return (await r2.json()).elements||[];
+      } catch(e2) {}
+      dbg('info','OSM '+kw.name+' fout → Google fallback');
+      return [];
+    }
+  }
 
   for (var ki=0; ki<kwadranten.length; ki++) {
     var kw = kwadranten[ki];
-    setP(8+Math.round((ki/kwadranten.length)*40), 'Phase 1: OSM ' + kw.name + '...');
-    var bbox = kw.s+','+kw.w+','+kw.n+','+kw.e;
-    var q = '[out:json][timeout:60][bbox:'+bbox+'];(node["leisure"="fitness_centre"];way["leisure"="fitness_centre"];relation["leisure"="fitness_centre"];node["amenity"="gym"];way["amenity"="gym"];relation["amenity"="gym"];node["sport"="fitness"]["name"];);out center;';
-    try {
-      var r = await fetchWithTimeout(overpassBase, {
-        method:'POST', mode:'cors',
-        headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        body:'data='+encodeURIComponent(q)
-      }, 65000);
-      if (r.ok) {
-        var d = await r.json();
-        var elements = d.elements||[];
-        var before = gyms.length;
-        elements.forEach(function(e) {
-          var lat = e.lat||(e.center&&e.center.lat);
-          var lon = e.lon||(e.center&&e.center.lon);
-          var name = (e.tags&&e.tags.name)||'Fitnessstudio';
-          addGym(lat, lon, name);
-        });
-        dbg('info', 'OSM '+kw.name+': '+elements.length+' → +' + (gyms.length-before) + ' nieuw (tot: '+gyms.length+')');
-      } else {
-        dbg('info', 'OSM '+kw.name+': HTTP ' + r.status + ', gebruik Google als fallback');
-      }
-    } catch(e2) {
-      dbg('info', 'OSM '+kw.name+' fout: '+e2.message.substring(0,50)+' → Google fallback');
-    }
-    await new Promise(function(res){setTimeout(res,1000);});
+    setP(8+Math.round((ki/kwadranten.length)*40), 'OSM: '+kw.name+'...');
+    var elements = await overpassQuery(kw);
+    var before = gyms.length;
+    elements.forEach(function(e) {
+      var lat = e.lat||(e.center&&e.center.lat);
+      var lon = e.lon||(e.center&&e.center.lon);
+      addGym(lat, lon, (e.tags&&e.tags.name)||'Fitnessstudio');
+    });
+    if (elements.length > 0) dbg('info','OSM '+kw.name+': +' + (gyms.length-before) + ' (tot: '+gyms.length+')');
+    await new Promise(function(res){setTimeout(res,800);});
   }
 
-  dbg('ok','OSM geladen: '+gyms.length+' Studios');
 
   // ══ FASE 2: GOOGLE PLACES — aanvulling voor locaties die OSM mist ══
   setP(53,'Phase 2/2: Google Places...');
