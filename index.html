@@ -982,7 +982,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
         </div>
       </div>
       <div class="sec">
-        <div class="stitle" style="display:flex;justify-content:space-between;">Debug Log <span onclick="document.getElementById('debug-log').innerHTML=''" style="cursor:pointer;font-size:10px;font-weight:400;">wis</span></div>
+        <div class="stitle" style="display:flex;justify-content:space-between;">Debug log <span onclick="document.getElementById('debug-log').innerHTML=''" style="cursor:pointer;font-size:10px;font-weight:400;">wis</span></div>
         <div id="debug-log"></div>
       </div>
       <div class="sec">
@@ -1040,7 +1040,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
         </div>
       </div>
       <div class="sec">
-        <div class="stitle" style="display:flex;justify-content:space-between;">Debug Log <span onclick="document.getElementById('drivn-debug-log').innerHTML=''" style="cursor:pointer;font-size:10px;font-weight:400;">wis</span></div>
+        <div class="stitle" style="display:flex;justify-content:space-between;">Debug log <span onclick="document.getElementById('drivn-debug-log').innerHTML=''" style="cursor:pointer;font-size:10px;font-weight:400;">wis</span></div>
         <div id="drivn-debug-log"></div>
       </div>
       <div class="sec">
@@ -1710,7 +1710,30 @@ const DE_POP = {
 const GOOGLE_API_KEY = 'AIzaSyDBhNnhYMA73oOQ-e5Xkr4J1SmLYmdOFIo';
 const GEOJSON_URL = 'https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/4_kreise/4_niedrig.geo.json';
 const DE_AVG = 10000;
-const CACHE_KEY = 'gymdata_de_v2';
+const CACHE_KEY = 'gymdata_de_v3';
+
+// 40km grid over heel Duitsland (374 cellen) voor volledige dekking
+const DE_GRID = (function(){
+  var g=[], slat=40/111, slon=40/71;
+  for(var la=47.3;la<55.1;la+=slat)
+    for(var lo=5.9;lo<15.1;lo+=slon)
+      g.push([+(la+slat/2).toFixed(4), +(lo+slon/2).toFixed(4)]);
+  return g;
+})();
+
+// 50 grootste steden voor keten-specifieke zoekopdrachten
+const DE_CITIES = [
+  [52.52,13.40],[48.14,11.58],[53.55,10.00],[51.23,6.79],[50.94,6.96],
+  [50.12,8.68],[48.78,9.18],[51.51,7.46],[51.46,7.01],[49.45,11.08],
+  [51.34,12.38],[51.05,13.74],[53.08,8.80],[52.27,10.52],[47.99,7.85],
+  [48.37,10.90],[49.00,8.40],[51.96,7.63],[52.37,9.73],[54.32,10.13],
+  [51.78,14.33],[51.03,13.73],[49.24,7.00],[48.50,9.21],[53.86,10.69],
+  [52.13,11.62],[50.01,8.27],[50.73,7.10],[52.40,13.06],[53.47,8.11],
+  [49.60,11.01],[50.78,6.09],[52.02,8.53],[51.21,6.44],[49.77,9.93],
+  [52.63,13.19],[50.23,8.80],[51.67,8.79],[53.57,9.97],[48.00,10.88],
+  [50.55,8.67],[53.14,8.22],[50.35,7.60],[49.48,8.47],[50.83,12.92],
+  [51.48,11.97],[52.86,9.73],[51.37,7.66],[48.71,9.22],[53.21,12.09],
+];
 
 let MAP, geoLayer, dotLayer, geoData=null, gyms=[], mode='opp', loaded=false, searchIndex=[];
 
@@ -1786,173 +1809,98 @@ async function startLoad() {
     }
   } catch(e) { cached = null; }
 
-  // GeoJSON: Landkreise Deutschland (isellsoap)
+  // GeoJSON: Landkreise Deutschland
   setP(10,'Schritt 1/3: Kartendaten laden...');
   try {
     dbg('info','GeoJSON: Landkreise laden...');
     var gr=await fetchWithTimeout(GEOJSON_URL,{mode:'cors'},25000);
-    if (!gr.ok) throw new Error('HTTP '+gr.status);
+    if(!gr.ok) throw new Error('HTTP '+gr.status);
     geoData=await gr.json();
-    if (geoData&&geoData.features&&geoData.features.length>10){
+    if(geoData&&geoData.features&&geoData.features.length>10){
       dbg('ok','GeoJSON: '+geoData.features.length+' Landkreise geladen');
       document.getElementById('s-gem').textContent=geoData.features.length;
     }
   } catch(e){ dbg('err','GeoJSON Fehler: '+e.message); }
-  if (!geoData){
-    document.getElementById('btn-load').disabled=false;
-    dbg('err','Kartendaten konnten nicht geladen werden');
-    return;
-  }
+  if(!geoData){ document.getElementById('btn-load').disabled=false; dbg('err','Kartendaten konnten nicht geladen werden'); return; }
 
-  // Google Places - gebruik cache als beschikbaar
-  setP(40,'Stap 3/3: sportscholen ophalen...');
-
-  if (cached) {
-    gyms = cached.gyms;
-    gyms.forEach(function(g){
-      L.circleMarker([g.lat,g.lon],{radius:4,fillColor:'#00A550',color:'#fff',weight:1.5,fillOpacity:.9}).bindPopup('<b>'+g.name+'</b>').addTo(dotLayer);
-    });
-    document.getElementById('s-gyms').textContent = gyms.length;
-    dbg('ok','Studios aus Cache: '+gyms.length);
-    setP(88,'Scores berechnen...');
-    if (geoData&&gyms.length>0){
-      geoData.features.forEach(function(f){
-        var c=getCentroid(f);
-        var names=[];
-        gyms.forEach(function(g){
-          if (Math.abs(g.lat-c[0])>.3||Math.abs(g.lon-c[1])>.4) return;
-          if (ptIn(g.lon,g.lat,f.geometry)) names.push(g.name);
-        });
-        f.properties._gymNames=names;
-      });
-    }
-    computeScores(); renderMap(); buildTopList(); buildSearchIndex();
-    setP(100,'Fertig (aus Cache)');
-    MAP.invalidateSize(); loaded=true;
-    return;
-  }
-
-  var gemeenten=[];
-  geoData.features.forEach(function(f){
-    var id3=f.properties.ID_3||0;
-    var entry=DE_POP[id3];
-    var pop=entry?entry[2]:0;
-    var name=f.properties.NAME_3||'';
-    var land=entry?entry[1]:'';
-    if (pop>0){
-      var c=getCentroid(f);
-      gemeenten.push({name:name,land:land,lat:c[0],lon:c[1],pop:pop,id3:id3});
-    }
-  });
-  // Sorteer op bevolking aflopend zodat grote steden voorrang krijgen
-  gemeenten.sort(function(a,b){return b.pop-a.pop;});
-  dbg('info','Google Places: '+gemeenten.length+' Landkreise durchsuchen...');
+  dbg('info','Google Places: '+DE_GRID.length+' Grid-Zellen + 50 Städte durchsuchen...');
 
   var seen={};
   var headers={'Content-Type':'application/json','X-Goog-Api-Key':GOOGLE_API_KEY,'X-Goog-FieldMask':'places.displayName,places.location'};
 
-  function addPlaces(places) {
-    places.forEach(function(p){
-      if (!p.location) return;
+  function addPlaces(places){
+    (places||[]).forEach(function(p){
+      if(!p.location) return;
       var lat=p.location.latitude,lon=p.location.longitude;
       var key=Math.round(lat*10000)+'_'+Math.round(lon*10000);
-      if (seen[key]) return;
+      if(seen[key]) return;
       seen[key]=true;
-      var name=(p.displayName&&p.displayName.text)||'Sportschool';
+      var name=(p.displayName&&p.displayName.text)||'Fitnessstudio';
       gyms.push({lat:lat,lon:lon,name:name});
       L.circleMarker([lat,lon],{radius:4,fillColor:'#00A550',color:'#fff',weight:1.5,fillOpacity:.9}).bindPopup('<b>'+name+'</b>').addTo(dotLayer);
     });
     document.getElementById('s-gyms').textContent=gyms.length;
   }
 
-  function pSearch(url, body) {
+  function pSearch(url,body){
     return fetchWithTimeout(url,{method:'POST',mode:'cors',headers:headers,body:JSON.stringify(body)},12000)
       .then(function(r){return r.ok?r.json().then(function(d){return d.places||[];}):[];})
       .catch(function(){return [];});
   }
 
-  // FASE 1: Type-based nearby search per gemeente (1 call per gemeente)
-  setP(42,'Phase 1/3: Typ-Suche...');
-  var batchSize=8;
-  for (var bi=0;bi<gemeenten.length;bi+=batchSize){
-    var batch=gemeenten.slice(bi,bi+batchSize);
-    setP(42+Math.round((bi/gemeenten.length)*20),'Phase 1: Landkreis '+(bi+1)+'/'+gemeenten.length+'...');
-    var r1=await Promise.all(batch.map(function(gem){
-      var radius=gem.pop>1000000?20000:gem.pop>500000?16000:gem.pop>200000?14000:gem.pop>100000?12000:gem.pop>50000?10000:8000;
+  var BATCH=10;
+
+  // FASE 1: Grid type-search — 40km grid over heel DE
+  setP(20,'Phase 1/3: Grid-Suche (Typ)...');
+  for(var bi=0;bi<DE_GRID.length;bi+=BATCH){
+    setP(20+Math.round((bi/DE_GRID.length)*28),'Phase 1: Zelle '+(bi+1)+'/'+DE_GRID.length+'...');
+    var r1=await Promise.all(DE_GRID.slice(bi,bi+BATCH).map(function(cell){
       return pSearch('https://places.googleapis.com/v1/places:searchNearby',{
-        includedTypes:['gym','fitness_center','sports_club','sports_complex','health','yoga_studio','martial_arts_school'],
+        includedTypes:['gym','fitness_center','sports_club','health','yoga_studio','physical_fitness_program'],
         maxResultCount:20,
-        locationRestriction:{circle:{center:{latitude:gem.lat,longitude:gem.lon},radius:radius}}
+        locationRestriction:{circle:{center:{latitude:cell[0],longitude:cell[1]},radius:28000}}
       });
     }));
     r1.forEach(function(places){addPlaces(places);});
-    await new Promise(function(res){setTimeout(res,150);});
+    await new Promise(function(res){setTimeout(res,120);});
   }
 
-  // FASE 2: Tekst-based search per gemeente (1 call per gemeente)
-  setP(62,'Phase 2/3: Text-Suche...');
-  for (var bi2=0;bi2<gemeenten.length;bi2+=batchSize){
-    var batch2=gemeenten.slice(bi2,bi2+batchSize);
-    setP(62+Math.round((bi2/gemeenten.length)*18),'Phase 2: Landkreis '+(bi2+1)+'/'+gemeenten.length+'...');
-    var r2=await Promise.all(batch2.map(function(gem){
-      var radius=gem.pop>1000000?20000:gem.pop>500000?16000:gem.pop>200000?14000:gem.pop>100000?12000:gem.pop>50000?10000:8000;
+  // FASE 2: Grid text-search — pakt ook nieuwe/ongetagde studios
+  setP(48,'Phase 2/3: Grid-Suche (Text)...');
+  for(var bi2=0;bi2<DE_GRID.length;bi2+=BATCH){
+    setP(48+Math.round((bi2/DE_GRID.length)*24),'Phase 2: Zelle '+(bi2+1)+'/'+DE_GRID.length+'...');
+    var r2=await Promise.all(DE_GRID.slice(bi2,bi2+BATCH).map(function(cell){
       return pSearch('https://places.googleapis.com/v1/places:searchText',{
-        textQuery:'Fitnessstudio Sportzentrum Fitnesscenter Gym Sport',
+        textQuery:'Fitnessstudio Sportzentrum',
         maxResultCount:20,
-        locationBias:{circle:{center:{latitude:gem.lat,longitude:gem.lon},radius:radius}}
+        locationBias:{circle:{center:{latitude:cell[0],longitude:cell[1]},radius:28000}}
       });
     }));
     r2.forEach(function(places){addPlaces(places);});
-    await new Promise(function(res){setTimeout(res,150);});
+    await new Promise(function(res){setTimeout(res,120);});
   }
 
-  // FASE 3: Ketenzoekacties - 5 grote regio-ankers, batches van 3
-  setP(80,'Phase 3/3: Ketten-Suche...');
-  // 20 regio-ankers voor volledige DE dekking
-  var anchors=[
-    {lat:52.52,lon:13.40,r:40000},  // Berlin
-    {lat:48.14,lon:11.58,r:40000},  // München
-    {lat:53.55,lon:10.00,r:40000},  // Hamburg
-    {lat:51.23,lon:6.79,r:40000},   // Düsseldorf
-    {lat:50.94,lon:6.96,r:40000},   // Köln
-    {lat:50.12,lon:8.68,r:40000},   // Frankfurt am Main
-    {lat:48.78,lon:9.18,r:40000},   // Stuttgart
-    {lat:51.51,lon:7.46,r:40000},   // Dortmund
-    {lat:49.45,lon:11.08,r:40000},  // Nürnberg
-    {lat:51.34,lon:12.38,r:40000},  // Leipzig
-    {lat:51.05,lon:13.74,r:40000},  // Dresden
-    {lat:53.08,lon:8.80,r:40000},   // Bremen
-    {lat:52.27,lon:10.52,r:40000},  // Braunschweig
-    {lat:47.99,lon:7.85,r:40000},   // Freiburg
-    {lat:48.37,lon:10.90,r:40000},  // Augsburg
-    {lat:49.00,lon:8.40,r:40000},   // Karlsruhe
-    {lat:51.96,lon:7.63,r:40000},   // Münster
-    {lat:52.37,lon:9.73,r:40000},   // Hannover
-    {lat:54.32,lon:10.13,r:40000},  // Kiel
-    {lat:51.78,lon:14.33,r:40000},  // Cottbus/Ostdeutschland
+  // FASE 3: Keten-specifieke zoekopdrachten in 50 steden
+  setP(72,'Phase 3/3: Ketten-Suche...');
+  var hardChains=[
+    'Basic-Fit','Kieser Training','Mrs. Sporty','Bodystreet',
+    'McFit','FitX','clever fit','EASYFITNESS','John Reed',
+    'LifeFit','Fitness First','all inclusive fitness','Pfitzenmeier',
+    'INJOY Fitness','EVO Fitness','FIT/One',
   ];
-  // Alle grote ketens in Duitsland (9.000+ locaties totaal)
-  var chains=[
-    'McFit','FitX Fitnessstudio','clever fit','EASYFITNESS',
-    'John Reed Fitness','Kieser Training','LifeFit','Fitness First',
-    'Pfitzenmeier','Mrs. Sporty','Injoy','BestFit','all inclusive fitness',
-    'EVO Fitness','FIT/One','High5 Gym','Sportpark','Wellfit',
-    'Körperformstudio','Bodystreet','Clever fit',
-  ];
-  for (var ci=0;ci<chains.length;ci++){
-    setP(80+Math.round((ci/chains.length)*10),'Phase 3: '+chains[ci]+'...');
-    // Stuur ankers in batches van 2 om rate limiting te vermijden
-    for (var ai=0;ai<anchors.length;ai+=3){
-      var anchorBatch=anchors.slice(ai,ai+3);
-      var chainResults=await Promise.all(anchorBatch.map(function(a){
+  var CITY_BATCH=5;
+  for(var ci=0;ci<hardChains.length;ci++){
+    setP(72+Math.round((ci/hardChains.length)*10),'Phase 3: '+hardChains[ci]+'...');
+    for(var ai=0;ai<DE_CITIES.length;ai+=CITY_BATCH){
+      var cr=await Promise.all(DE_CITIES.slice(ai,ai+CITY_BATCH).map(function(city){
         return pSearch('https://places.googleapis.com/v1/places:searchText',{
-          textQuery:chains[ci],
+          textQuery:hardChains[ci],
           maxResultCount:20,
-          locationBias:{circle:{center:{latitude:a.lat,longitude:a.lon},radius:a.r}}
+          locationBias:{circle:{center:{latitude:city[0],longitude:city[1]},radius:60000}}
         });
       }));
-      chainResults.forEach(function(places){addPlaces(places);});
-      await new Promise(function(res){setTimeout(res,250);});
+      cr.forEach(function(places){addPlaces(places);});
+      await new Promise(function(res){setTimeout(res,150);});
     }
   }
 
@@ -1962,7 +1910,7 @@ async function startLoad() {
   try {
     var cacheData = { ts: Date.now(), gyms: gyms.map(function(g){ return {lat:g.lat,lon:g.lon,name:g.name}; }) };
     localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-    dbg('info','Studios im Cache gespeichert');
+    dbg('info','Gyms opgeslagen in cache');
   } catch(e) { dbg('info','Cache-Fehler: '+e.message); }
 
   // Koppel gymnamen per gemeente
@@ -2018,7 +1966,7 @@ function countIn(f,c){
 
 // ── SCORES ────────────────────────────────────────────────────────────────
 function computeScores(){
-  if (!geoData) return;
+  if(!geoData) return;
   var ratioMap={};
   geoData.features.forEach(function(f){
     var id3=f.properties.ID_3||0;
@@ -2028,18 +1976,13 @@ function computeScores(){
     var land=entry?entry[1]:'';
     var c=getCentroid(f);
     var gc=gyms.length>0?countIn(f,c):0;
-    if (!pop&&gc>0) pop=gc*DE_AVG;
-    f.properties._id3=id3;
-    f.properties._name=name;
-    f.properties._land=land;
-    f.properties._pop=pop;
-    f.properties._gc=gc;
-    f.properties._popEst=!entry;
-    // Inkomen placeholder (Destatis regionaal inkomen 2022 gemiddeld ~€24.000 bruto)
+    if(!pop&&gc>0) pop=gc*DE_AVG;
+    f.properties._id3=id3;f.properties._name=name;f.properties._land=land;
+    f.properties._pop=pop;f.properties._gc=gc;f.properties._popEst=!entry;
     f.properties._thuiswerk=0;
     var ratio=(pop>=20000&&gc>0)?pop/gc:(pop>=20000&&gc===0?pop*1.5:0);
     f.properties._ratio=ratio;
-    if (pop>=20000) ratioMap[id3]=ratio;
+    if(pop>=20000) ratioMap[id3]=ratio;
   });
   var ratios=Object.values(ratioMap).filter(function(r){return r>0;}).sort(function(a,b){return a-b;});
   var len=ratios.length;
@@ -2052,8 +1995,8 @@ function computeScores(){
   geoData.features.forEach(function(f){
     var score=(f.properties._pop||0)>=8000?pct(f.properties._ratio||0):0;
     f.properties._score=score;
-    if (score>70&&(f.properties._pop||0)>40000) opp++;
-    if ((f.properties._gc||0)>12&&score<40) sat++;
+    if(score>70&&(f.properties._pop||0)>40000) opp++;
+    if((f.properties._gc||0)>12&&score<40) sat++;
   });
   document.getElementById('s-opp').textContent=opp;
   document.getElementById('s-sat').textContent=sat;
@@ -2063,7 +2006,7 @@ function computeScores(){
 function getColor(f){
   var s=f.properties._score||0,p=f.properties._pop||0,g=f.properties._gc||0;
   if (mode==='opp'){
-    if (!p||p<20000) return '#d5d5d5';
+    if(!p||p<20000) return '#d5d5d5';
     if (s>75) return '#1a5c2a';if (s>60) return '#2d8a3e';
     if (s>45) return '#6ab87a';if (s>25) return '#f5c842';
     return '#c0392b';
@@ -2466,7 +2409,7 @@ async function searchPlace(val) {
     // Google Geocoding API - zoek plaatsnaam in Nederland
     // Nominatim (OpenStreetMap) - gratis, geen key nodig, uitstekend voor NL plaatsen
     var url = 'https://nominatim.openstreetmap.org/search?q='
-      + encodeURIComponent(val + ' Deutschland')
+      + encodeURIComponent(val+' Deutschland')
       + '&countrycodes=de&format=json&addressdetails=1&limit=5';
     var r = await fetchWithTimeout(url, {
       mode: 'cors',
