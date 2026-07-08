@@ -1840,59 +1840,49 @@ async function startLoad() {
     document.getElementById('s-gyms').textContent = gyms.length;
   }
 
-  // ══ FASE 1: OVERPASS API (OpenStreetMap) — volledig DE, geen resultaatlimiet ══
-  // Overpass geeft ALLE bekende sportscholen in DE terug
-  // Wordt per Bundesland opgehaald om timeout te vermijden
-  setP(8,'Phase 1/2: OpenStreetMap data laden...');
-  
-  // ISO3166-2 codes — werken altijd in OSM ongeacht volledige staatsnaam
-  // (Bayern=Freistaat Bayern, Bremen=Freie Hansestadt Bremen, etc.)
-  var bundeslaender = [
-    {iso:'DE-BY',name:'Bayern'},
-    {iso:'DE-BW',name:'Baden-Württemberg'},
-    {iso:'DE-NW',name:'Nordrhein-Westfalen'},
-    {iso:'DE-NI',name:'Niedersachsen'},
-    {iso:'DE-HE',name:'Hessen'},
-    {iso:'DE-SN',name:'Sachsen'},
-    {iso:'DE-RP',name:'Rheinland-Pfalz'},
-    {iso:'DE-BB',name:'Brandenburg'},
-    {iso:'DE-ST',name:'Sachsen-Anhalt'},
-    {iso:'DE-TH',name:'Thüringen'},
-    {iso:'DE-HH',name:'Hamburg'},
-    {iso:'DE-BE',name:'Berlin'},
-    {iso:'DE-MV',name:'Mecklenburg-Vorpommern'},
-    {iso:'DE-HB',name:'Bremen'},
-    {iso:'DE-SL',name:'Saarland'},
-    {iso:'DE-SH',name:'Schleswig-Holstein'},
-  ];
+  // ══ FASE 1: OVERPASS API — OSM data voor heel Duitsland ══
+  // Strategie: bbox-query voor heel DE (geen area lookup die kan falen)
+  // Opgesplitst in 4 kwadranten om timeout te vermijden
 
   var overpassBase = 'https://overpass-api.de/api/interpreter';
 
-  for (var bi=0; bi<bundeslaender.length; bi++) {
-    var bl = bundeslaender[bi];
-    setP(8+Math.round((bi/bundeslaender.length)*45), 'Phase 1: '+bl.name+'...');
-    var q = '[out:json][timeout:30];area["ISO3166-2"="'+bl.iso+'"]->.b;(node["leisure"="fitness_centre"](area.b);way["leisure"="fitness_centre"](area.b);node["amenity"="gym"](area.b);way["amenity"="gym"](area.b);node["sport"="fitness"](area.b);node["leisure"="fitness_station"](area.b););out center;';
+  // DE bounding box opgesplitst in 4 kwadranten
+  var kwadranten = [
+    {name:'NW-DE', s:51.0, n:55.2, w:5.8,  e:10.5},
+    {name:'NO-DE', s:51.0, n:55.2, w:10.5, e:15.2},
+    {name:'SW-DE', s:47.2, n:51.0, w:5.8,  e:10.5},
+    {name:'SO-DE', s:47.2, n:51.0, w:10.5, e:15.2},
+  ];
+
+  for (var ki=0; ki<kwadranten.length; ki++) {
+    var kw = kwadranten[ki];
+    setP(8+Math.round((ki/kwadranten.length)*40), 'Phase 1: OSM ' + kw.name + '...');
+    var bbox = kw.s+','+kw.w+','+kw.n+','+kw.e;
+    var q = '[out:json][timeout:60][bbox:'+bbox+'];(node["leisure"="fitness_centre"];way["leisure"="fitness_centre"];node["amenity"="gym"];way["amenity"="gym"];node["leisure"="sports_centre"]["sport"="fitness"];);out center;';
     try {
       var r = await fetchWithTimeout(overpassBase, {
         method:'POST', mode:'cors',
         headers:{'Content-Type':'application/x-www-form-urlencoded'},
         body:'data='+encodeURIComponent(q)
-      }, 35000);
+      }, 65000);
       if (r.ok) {
         var d = await r.json();
         var elements = d.elements||[];
+        var before = gyms.length;
         elements.forEach(function(e) {
           var lat = e.lat||(e.center&&e.center.lat);
           var lon = e.lon||(e.center&&e.center.lon);
-          var name = (e.tags&&e.tags.name)||bl+' Studio';
+          var name = (e.tags&&e.tags.name)||'Fitnessstudio';
           addGym(lat, lon, name);
         });
-        dbg('info','OSM '+bl.name+': '+elements.length+' (tot: '+gyms.length+')');
+        dbg('info', 'OSM '+kw.name+': '+elements.length+' → +' + (gyms.length-before) + ' nieuw (tot: '+gyms.length+')');
+      } else {
+        dbg('info', 'OSM '+kw.name+': HTTP ' + r.status + ', gebruik Google als fallback');
       }
     } catch(e2) {
-      dbg('info','OSM '+bl.name+' fout: '+e2.message.substring(0,40));
+      dbg('info', 'OSM '+kw.name+' fout: '+e2.message.substring(0,50)+' → Google fallback');
     }
-    await new Promise(function(res){setTimeout(res,500);});
+    await new Promise(function(res){setTimeout(res,1000);});
   }
 
   dbg('ok','OSM geladen: '+gyms.length+' Studios');
