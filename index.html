@@ -1845,19 +1845,33 @@ async function startLoad() {
   // Wordt per Bundesland opgehaald om timeout te vermijden
   setP(8,'Phase 1/2: OpenStreetMap data laden...');
   
+  // ISO3166-2 codes — werken altijd in OSM ongeacht volledige staatsnaam
+  // (Bayern=Freistaat Bayern, Bremen=Freie Hansestadt Bremen, etc.)
   var bundeslaender = [
-    'Bayern','Baden-Württemberg','Nordrhein-Westfalen','Niedersachsen',
-    'Hessen','Sachsen','Rheinland-Pfalz','Brandenburg','Sachsen-Anhalt',
-    'Thüringen','Hamburg','Berlin','Mecklenburg-Vorpommern','Bremen',
-    'Saarland','Schleswig-Holstein'
+    {iso:'DE-BY',name:'Bayern'},
+    {iso:'DE-BW',name:'Baden-Württemberg'},
+    {iso:'DE-NW',name:'Nordrhein-Westfalen'},
+    {iso:'DE-NI',name:'Niedersachsen'},
+    {iso:'DE-HE',name:'Hessen'},
+    {iso:'DE-SN',name:'Sachsen'},
+    {iso:'DE-RP',name:'Rheinland-Pfalz'},
+    {iso:'DE-BB',name:'Brandenburg'},
+    {iso:'DE-ST',name:'Sachsen-Anhalt'},
+    {iso:'DE-TH',name:'Thüringen'},
+    {iso:'DE-HH',name:'Hamburg'},
+    {iso:'DE-BE',name:'Berlin'},
+    {iso:'DE-MV',name:'Mecklenburg-Vorpommern'},
+    {iso:'DE-HB',name:'Bremen'},
+    {iso:'DE-SL',name:'Saarland'},
+    {iso:'DE-SH',name:'Schleswig-Holstein'},
   ];
 
   var overpassBase = 'https://overpass-api.de/api/interpreter';
 
   for (var bi=0; bi<bundeslaender.length; bi++) {
     var bl = bundeslaender[bi];
-    setP(8+Math.round((bi/bundeslaender.length)*45), 'Phase 1: '+bl+'...');
-    var q = '[out:json][timeout:30];area["name"="'+bl+'"]["boundary"="administrative"]["admin_level"="4"]->.b;(node["leisure"="fitness_centre"](area.b);way["leisure"="fitness_centre"](area.b);node["amenity"="gym"](area.b);way["amenity"="gym"](area.b);node["leisure"="sports_hall"]["sport"="fitness"](area.b););out center;';
+    setP(8+Math.round((bi/bundeslaender.length)*45), 'Phase 1: '+bl.name+'...');
+    var q = '[out:json][timeout:30];area["ISO3166-2"="'+bl.iso+'"]->.b;(node["leisure"="fitness_centre"](area.b);way["leisure"="fitness_centre"](area.b);node["amenity"="gym"](area.b);way["amenity"="gym"](area.b);node["sport"="fitness"](area.b);node["leisure"="fitness_station"](area.b););out center;';
     try {
       var r = await fetchWithTimeout(overpassBase, {
         method:'POST', mode:'cors',
@@ -1873,10 +1887,10 @@ async function startLoad() {
           var name = (e.tags&&e.tags.name)||bl+' Studio';
           addGym(lat, lon, name);
         });
-        dbg('info','OSM '+bl+': '+elements.length+' (tot: '+gyms.length+')');
+        dbg('info','OSM '+bl.name+': '+elements.length+' (tot: '+gyms.length+')');
       }
     } catch(e2) {
-      dbg('info','OSM '+bl+' fout: '+e2.message.substring(0,40));
+      dbg('info','OSM '+bl.name+' fout: '+e2.message.substring(0,40));
     }
     await new Promise(function(res){setTimeout(res,500);});
   }
