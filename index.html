@@ -982,7 +982,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
         </div>
       </div>
       <div class="sec">
-        <div class="stitle" style="display:flex;justify-content:space-between;">Debug log <span onclick="document.getElementById('debug-log').innerHTML=''" style="cursor:pointer;font-size:10px;font-weight:400;">wis</span></div>
+        <div class="stitle" style="display:flex;justify-content:space-between;">Debug Log <span onclick="document.getElementById('debug-log').innerHTML=''" style="cursor:pointer;font-size:10px;font-weight:400;">wis</span></div>
         <div id="debug-log"></div>
       </div>
       <div class="sec">
@@ -1012,11 +1012,11 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
       <div class="sec">
         <div class="stitle">Legende</div>
         <div id="legend">
-          <div class="li"><div class="sw" style="background:#1a5c2a"></div>Sehr hohe Chance (&gt;75)</div>
-          <div class="li"><div class="sw" style="background:#2d8a3e"></div>Gute Chance (60–75)</div>
-          <div class="li"><div class="sw" style="background:#6ab87a"></div>Mittelmäßig (45–60)</div>
-          <div class="li"><div class="sw" style="background:#f5c842"></div>Gesättigt (25–45)</div>
-          <div class="li"><div class="sw" style="background:#c0392b"></div>Sehr gesättigt (&lt;25)</div>
+          <div class="li"><div class="sw" style="background:#1a5c2a"></div>Hohe Chance (&gt;75)</div>
+          <div class="li"><div class="sw" style="background:#2d8a3e"></div>Gut (60–75)</div>
+          <div class="li"><div class="sw" style="background:#6ab87a"></div>Mittel (45–60)</div>
+          <div class="li"><div class="sw" style="background:#f5c842"></div>Gering (25–45)</div>
+          <div class="li"><div class="sw" style="background:#c0392b"></div>Gesättigt (&lt;25)</div>
           <div class="li"><div class="sw" style="background:#d5d5d5"></div>Keine Daten</div>
         </div>
       </div>
@@ -1040,7 +1040,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
         </div>
       </div>
       <div class="sec">
-        <div class="stitle" style="display:flex;justify-content:space-between;">Debug log <span onclick="document.getElementById('drivn-debug-log').innerHTML=''" style="cursor:pointer;font-size:10px;font-weight:400;">wis</span></div>
+        <div class="stitle" style="display:flex;justify-content:space-between;">Debug Log <span onclick="document.getElementById('drivn-debug-log').innerHTML=''" style="cursor:pointer;font-size:10px;font-weight:400;">wis</span></div>
         <div id="drivn-debug-log"></div>
       </div>
       <div class="sec">
@@ -1067,11 +1067,11 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
       <div class="sec">
         <div class="stitle">Legende</div>
         <div id="drivn-legend">
-          <div class="li"><div class="sw" style="background:#1a5c2a"></div>Sehr hohe Chance (&gt;75)</div>
-          <div class="li"><div class="sw" style="background:#2d8a3e"></div>Gute Chance (60–75)</div>
-          <div class="li"><div class="sw" style="background:#6ab87a"></div>Mittelmäßig (45–60)</div>
-          <div class="li"><div class="sw" style="background:#f5c842"></div>Gesättigt (25–45)</div>
-          <div class="li"><div class="sw" style="background:#c0392b"></div>Sehr gesättigt (&lt;25)</div>
+          <div class="li"><div class="sw" style="background:#1a5c2a"></div>Hohe Chance (&gt;75)</div>
+          <div class="li"><div class="sw" style="background:#2d8a3e"></div>Gut (60–75)</div>
+          <div class="li"><div class="sw" style="background:#6ab87a"></div>Mittel (45–60)</div>
+          <div class="li"><div class="sw" style="background:#f5c842"></div>Gering (25–45)</div>
+          <div class="li"><div class="sw" style="background:#c0392b"></div>Gesättigt (&lt;25)</div>
           <div class="li"><div class="sw" style="background:#d5d5d5"></div>Keine Daten</div>
         </div>
       </div>
@@ -1087,7 +1087,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
 <div id="right">
       <!-- ══ FITNESS TABS ══ -->
       <div id="tab-bar" style="display:flex;">
-        <button class="tab active" id="t-map" onclick="showTab('map')">Karte</button>
+        <button class="tab active" id="t-map" onclick="showTab('map')">Kaart</button>
         <button class="tab" id="t-kansen" onclick="showTab('kansen')">Top Chancen</button>
         <div id="search-wrap">
           <input id="search-input" type="text" placeholder="Landkreis suchen..." oninput="onSearch(this.value)" onkeydown="onSearchKey(event)">
@@ -1108,7 +1108,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
 
       <!-- ══ WINE TABS ══ -->
       <div id="wine-tab-bar" style="display:none;flex-shrink:0;height:40px;padding:0 12px;gap:0;background:var(--surface);border-bottom:1px solid var(--border);align-items:center;">
-        <button class="tab active" id="t-wine-map" onclick="showWineTab('wine-map')" style="border-bottom-color:var(--wine);color:var(--wine);">Karte</button>
+        <button class="tab active" id="t-wine-map" onclick="showWineTab('wine-map')" style="border-bottom-color:var(--wine);color:var(--wine);">Kaart</button>
         <button class="tab" id="t-wijn-kansen" onclick="showWineTab('wijn-kansen')">Top Chancen</button>
         <div id="wine-search-wrap">
           <input id="wine-search-input" type="text" placeholder="Landkreis suchen..." oninput="onWineSearch(this.value)" onkeydown="onWineSearchKey(event)">
@@ -1125,7 +1125,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
 
 
       <div id="drivn-tab-bar" style="display:none;flex-shrink:0;height:40px;padding:0 12px;gap:0;background:var(--surface);border-bottom:1px solid var(--border);align-items:center;">
-        <button class="tab active" id="t-drivn-map" onclick="showDrivnTab('drivn-map')" style="border-bottom-color:var(--drivn);color:var(--drivn);">Karte</button>
+        <button class="tab active" id="t-drivn-map" onclick="showDrivnTab('drivn-map')" style="border-bottom-color:var(--drivn);color:var(--drivn);">Kaart</button>
         <button class="tab" id="t-drivn-kansen" onclick="showDrivnTab('drivn-kansen')">Top Chancen</button>
         <div id="drivn-search-wrap" style="position:relative;margin-left:8px;">
           <input id="drivn-search-input" type="text" placeholder="Landkreis suchen..." oninput="onDrivnSearch(this.value)" onkeydown="onDrivnSearchKey(event)" style="padding:5px 28px 5px 10px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:#1a1a1a;outline:none;width:170px;">
@@ -1204,7 +1204,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
   <div class="modal-box">
     <h2>Export opties</h2>
     <p>Kies wat je wilt exporteren</p>
-    <button class="mbtn mbtn-primary" onclick="exportMap()">🗺 Karte afdrukken als PDF</button>
+    <button class="mbtn mbtn-primary" onclick="exportMap()">🗺 Kaart afdrukken als PDF</button>
     <button class="mbtn mbtn-secondary" onclick="exportList()">📋 Top 30 lijst als PDF</button>
     <button class="mbtn mbtn-cancel" onclick="hideExport()">Annuleren</button>
   </div>
@@ -1252,6 +1252,7 @@ var INKOMEN_DATA = {"GM0003": 33000, "GM0005": 34000, "GM0007": 34000, "GM0008":
 const CBS_POP = {"GM0003":14421,"GM0005":15042,"GM0007":22073,"GM0008":21060,"GM0009":10756,"GM0010":62049,"GM0014":22613,"GM0015":16386,"GM0017":38477,"GM0018":31649,"GM0022":29047,"GM0024":13428,"GM0025":60939,"GM0027":17011,"GM0028":23988,"GM0029":21752,"GM0030":14263,"GM0033":7619,"GM0034":16826,"GM0036":13036,"GM0037":17390,"GM0039":26617,"GM0040":40614,"GM0043":40299,"GM0045":44660,"GM0047":15688,"GM0048":104885,"GM0050":36143,"GM0051":18025,"GM0052":10978,"GM0053":21456,"GM0055":21551,"GM0056":21165,"GM0057":17427,"GM0058":17131,"GM0059":13396,"GM0060":28539,"GM0063":25175,"GM0064":16804,"GM0065":20427,"GM0068":14960,"GM0070":13082,"GM0072":22780,"GM0074":13398,"GM0075":21025,"GM0076":21890,"GM0077":41530,"GM0078":21680,"GM0080":108620,"GM0081":66688,"GM0082":33989,"GM0083":43012,"GM0085":13124,"GM0086":30561,"GM0088":21083,"GM0089":43199,"GM0090":21041,"GM0091":28553,"GM0093":17628,"GM0096":31779,"GM0098":18671,"GM0099":23393,"GM0100":18220,"GM0101":21050,"GM0102":19059,"GM0103":25613,"GM0105":41016,"GM0106":26736,"GM0109":17175,"GM0111":77068,"GM0113":37834,"GM0114":13817,"GM0115":34614,"GM0116":26424,"GM0117":17483,"GM0118":31640,"GM0119":44088,"GM0120":42756,"GM0121":19451,"GM0123":23036,"GM0124":22047,"GM0125":23413,"GM0128":31020,"GM0129":10878,"GM0130":30047,"GM0131":15337,"GM0133":22888,"GM0135":44481,"GM0136":33483,"GM0137":37020,"GM0138":13665,"GM0140":19017,"GM0141":26085,"GM0143":13985,"GM0144":19745,"GM0145":32484,"GM0147":42803,"GM0148":36696,"GM0150":44800,"GM0153":49200,"GM0154":29600,"GM0155":70200,"GM0156":40100,"GM0158":19200,"GM0160":25600,"GM0163":16800,"GM0164":52400,"GM0165":20100,"GM0166":28700,"GM0167":21200,"GM0168":14300,"GM0170":17500,"GM0171":16300,"GM0173":67600,"GM0175":65100,"GM0177":120000,"GM0178":27900,"GM0179":19400,"GM0180":40100,"GM0181":52200,"GM0183":97900,"GM0184":54400,"GM0186":44700,"GM0187":110200,"GM0189":38800,"GM0190":18100,"GM0191":11400,"GM0193":23200,"GM0195":14700,"GM0196":26600,"GM0197":30300,"GM0200":47200,"GM0202":13600,"GM0203":55700,"GM0204":50600,"GM0205":14700,"GM0206":25700,"GM0207":21200,"GM0208":44900,"GM0209":64400,"GM0210":18900,"GM0212":26600,"GM0213":33700,"GM0214":35700,"GM0215":14100,"GM0216":26300,"GM0217":13500,"GM0218":17400,"GM0221":81100,"GM0222":50200,"GM0223":35600,"GM0224":28700,"GM0225":22000,"GM0226":14700,"GM0228":28300,"GM0230":12500,"GM0232":18200,"GM0233":91100,"GM0234":26300,"GM0236":26800,"GM0237":26600,"GM0239":11800,"GM0240":96200,"GM0241":19700,"GM0243":21900,"GM0244":13400,"GM0245":22600,"GM0246":40200,"GM0247":48700,"GM0252":21200,"GM0253":53400,"GM0254":27200,"GM0255":66500,"GM0256":28400,"GM0258":16400,"GM0259":25100,"GM0260":33700,"GM0262":75900,"GM0263":32800,"GM0265":69800,"GM0267":22400,"GM0268":24800,"GM0269":62700,"GM0271":35700,"GM0272":26500,"GM0273":38400,"GM0274":26800,"GM0275":18900,"GM0277":24100,"GM0278":27000,"GM0279":61300,"GM0281":30900,"GM0283":27100,"GM0284":44600,"GM0285":35800,"GM0286":44800,"GM0287":151400,"GM0289":46200,"GM0290":38900,"GM0293":22800,"GM0294":29900,"GM0296":30000,"GM0297":55600,"GM0299":645000,"GM0301":41800,"GM0302":26200,"GM0303":73900,"GM0304":46200,"GM0305":32400,"GM0306":72700,"GM0307":22300,"GM0308":50700,"GM0310":55000,"GM0311":32200,"GM0312":42600,"GM0313":18400,"GM0317":107600,"GM0318":83200,"GM0321":40100,"GM0322":31900,"GM0323":27200,"GM0324":25900,"GM0326":37300,"GM0327":45400,"GM0329":41700,"GM0330":22400,"GM0331":25900,"GM0333":36200,"GM0335":27100,"GM0336":34800,"GM0337":31600,"GM0338":19700,"GM0339":74200,"GM0340":44200,"GM0341":25500,"GM0342":15200,"GM0344":41400,"GM0345":35100,"GM0346":23200,"GM0347":75200,"GM0348":38900,"GM0350":14300,"GM0351":90900,"GM0352":226300,"GM0353":40700,"GM0355":14900,"GM0356":879800,"GM0358":44700,"GM0361":25200,"GM0362":43500,"GM0363":921100,"GM0364":51600,"GM0365":64800,"GM0370":93700,"GM0373":45800,"GM0375":74300,"GM0376":35900,"GM0377":26400,"GM0379":55600,"GM0380":115500,"GM0381":54500,"GM0382":35900,"GM0383":58500,"GM0384":170600,"GM0385":44700,"GM0388":22700,"GM0389":80300,"GM0390":44300,"GM0391":24600,"GM0392":38100,"GM0393":78800,"GM0394":36500,"GM0396":182500,"GM0397":58500,"GM0398":30500,"GM0399":49000,"GM0400":73200,"GM0402":103700,"GM0403":69400,"GM0404":37500,"GM0405":41400,"GM0406":77300,"GM0407":97400,"GM0408":73700,"GM0410":17800,"GM0411":29300,"GM0412":59000,"GM0415":31700,"GM0416":44200,"GM0417":40600,"GM0418":29300,"GM0420":51600,"GM0431":40700,"GM0432":16600,"GM0437":158800,"GM0439":15700,"GM0441":118400,"GM0443":55900,"GM0444":38000,"GM0448":88500,"GM0450":50400,"GM0451":46100,"GM0453":46600,"GM0457":78100,"GM0458":61600,"GM0462":79000,"GM0463":24000,"GM0464":53400,"GM0473":102400,"GM0476":31700,"GM0478":82400,"GM0479":57000,"GM0480":44200,"GM0482":39800,"GM0483":50700,"GM0484":48500,"GM0489":24100,"GM0491":43900,"GM0493":53800,"GM0496":25400,"GM0498":34700,"GM0499":34900,"GM0501":66200,"GM0502":36700,"GM0503":34300,"GM0505":120300,"GM0512":47200,"GM0513":42000,"GM0518":548300,"GM0519":52400,"GM0523":64600,"GM0524":40100,"GM0526":70900,"GM0527":56600,"GM0528":44000,"GM0529":119200,"GM0530":61500,"GM0531":66000,"GM0532":82300,"GM0534":55100,"GM0537":40700,"GM0539":56000,"GM0541":61200,"GM0542":25200,"GM0543":31400,"GM0544":40100,"GM0545":68600,"GM0546":50800,"GM0547":40500,"GM0548":27300,"GM0549":55600,"GM0550":66400,"GM0553":66500,"GM0556":77500,"GM0557":46000,"GM0559":55900,"GM0560":73700,"GM0563":63700,"GM0564":27700,"GM0566":29200,"GM0568":39400,"GM0569":55600,"GM0570":54700,"GM0571":41800,"GM0572":75600,"GM0575":40200,"GM0576":57000,"GM0577":95100,"GM0578":42100,"GM0579":21100,"GM0580":55700,"GM0581":47200,"GM0582":39700,"GM0583":82100,"GM0584":53600,"GM0585":36400,"GM0588":30800,"GM0589":35700,"GM0590":95400,"GM0591":36200,"GM0592":57200,"GM0594":42100,"GM0595":47300,"GM0597":21500,"GM0598":30300,"GM0599":29700,"GM0600":23500,"GM0601":22900,"GM0602":73200,"GM0603":58600,"GM0606":44700,"GM0608":43300,"GM0609":52700,"GM0610":38200,"GM0611":31600,"GM0612":25600,"GM0613":23000,"GM0614":32900,"GM0616":28300,"GM0617":45300,"GM0622":29700,"GM0623":35400,"GM0624":43700,"GM0625":26200,"GM0626":22700,"GM0627":48800,"GM0628":25300,"GM0629":34700,"GM0631":47700,"GM0632":35200,"GM0633":59100,"GM0637":74000,"GM0638":55000,"GM0642":21600,"GM0643":40300,"GM0644":21500,"GM0645":40300,"GM0646":42400,"GM0647":76100,"GM0648":73300,"GM0649":26100,"GM0650":87700,"GM0651":49800,"GM0652":27200,"GM0653":50300,"GM0654":35900,"GM0655":22600,"GM0656":33900,"GM0657":37200,"GM0658":22600,"GM0659":19400,"GM0661":24900,"GM0664":16000,"GM0668":60900,"GM0669":25100,"GM0670":22700,"GM0671":26100,"GM0672":15300,"GM0673":37600,"GM0677":31600,"GM0678":56600,"GM0679":35900,"GM0683":16700,"GM0685":23700,"GM0687":50200,"GM0688":29600,"GM0689":40900,"GM0693":17900,"GM0694":17100,"GM0696":48300,"GM0698":65600,"GM0699":35900,"GM0700":20300,"GM0701":35400,"GM0702":18300,"GM0703":10200,"GM0704":25500,"GM0706":20200,"GM0707":30500,"GM0708":12800,"GM0709":22400,"GM0710":38000,"GM0712":17400,"GM0713":12800,"GM0714":32900,"GM0715":63900,"GM0716":56000,"GM0717":49500,"GM0718":43000,"GM0719":33200,"GM0720":98600,"GM0722":15900,"GM0736":75500,"GM0737":14800,"GM0738":21300,"GM0744":9600,"GM0748":26300,"GM0753":16200,"GM0755":22600,"GM0756":50500,"GM0757":24600,"GM0758":72700,"GM0762":50300,"GM0765":79700,"GM0766":62200,"GM0770":53700,"GM0772":127500,"GM0777":44500,"GM0779":27900,"GM0784":67000,"GM0785":62700,"GM0786":110200,"GM0788":43400,"GM0789":31800,"GM0791":32200,"GM0794":28200,"GM0796":62700,"GM0797":34500,"GM0798":91700,"GM0800":32900,"GM0803":27000,"GM0809":48800,"GM0815":42900,"GM0816":67700,"GM0820":74200,"GM0823":24700,"GM0824":26300,"GM0826":102900,"GM0828":44800,"GM0829":31200,"GM0840":35000,"GM0843":43700,"GM0845":38100,"GM0847":57600,"GM0848":24000,"GM0851":38300,"GM0852":18400,"GM0855":50600,"GM0856":23300,"GM0858":59000,"GM0861":116600,"GM0862":50700,"GM0865":53500,"GM0867":35200,"GM0870":33600,"GM0873":34500,"GM0874":96800,"GM0879":42900,"GM0880":77100,"GM0881":33300,"GM0882":20600,"GM0883":44800,"GM0884":65500,"GM0886":39100,"GM0888":49700,"GM0889":25900,"GM0893":47700,"GM0894":68100,"GM0895":26500,"GM0896":43900,"GM0899":66600,"GM0900":16200,"GM0901":30800,"GM0902":36800,"GM0903":27700,"GM0904":66200,"GM0905":33400,"GM0907":10500,"GM0908":23300,"GM0909":14600,"GM0910":23000,"GM0913":34000,"GM0914":26300,"GM0915":53200,"GM0916":51200,"GM0917":18700,"GM0918":19300,"GM0919":17300,"GM0920":35800,"GM0921":31200,"GM0922":20300,"GM0923":71500,"GM0924":19700,"GM0925":9800,"GM0926":22400,"GM0928":27500,"GM0929":37000,"GM0930":51700,"GM0931":62800,"GM0932":24100,"GM0933":20600,"GM0934":23400,"GM0935":21500,"GM0936":38100,"GM0938":82400,"GM0939":24500,"GM0940":20100,"GM0941":24600,"GM0942":52200,"GM0943":57900,"GM0944":25500,"GM0945":83700,"GM0946":36200,"GM0947":22400,"GM0948":44500,"GM0951":109200,"GM0953":19700,"GM0957":88100,"GM0958":22800,"GM0959":49000,"GM0960":73400,"GM0962":56200,"GM0963":52400,"GM0964":48600,"GM0965":40000,"GM0966":21100,"GM0968":11300,"GM0970":32000,"GM0971":42600,"GM0972":24200,"GM0973":27600,"GM0974":39600,"GM0975":52300,"GM0976":24100,"GM0978":78700,"GM0979":21200,"GM0980":26300,"GM0981":24200,"GM0982":26100,"GM0983":75900,"GM0984":32600,"GM0986":58000,"GM0988":20300,"GM0989":38600,"GM0993":55100,"GM0994":61100,"GM0995":27300,"GM0996":16500,"GM0997":23000,"GM0998":17500,"GM1507":31500,"GM1509":15300,"GM1525":44000,"GM1586":38700,"GM1598":22200,"GM1621":49500,"GM1640":58200,"GM1641":26600,"GM1651":55500,"GM1652":46300,"GM1655":60300,"GM1658":61100,"GM1659":38500,"GM1660":24200,"GM1661":39000,"GM1662":64200,"GM1663":48700,"GM1667":58700,"GM1669":73900,"GM1671":28900,"GM1672":22600,"GM1674":51200,"GM1676":22900,"GM1680":75200,"GM1681":46500,"GM1684":57200,"GM1685":25300,"GM1690":37200,"GM1695":38100,"GM1696":44100,"GM1699":39600,"GM1700":23000,"GM1701":57600,"GM1702":77600,"GM1706":26900,"GM1708":46700,"GM1709":25100,"GM1711":21500,"GM1714":38300,"GM1719":38700,"GM1721":32900,"GM1722":24700,"GM1723":37000,"GM1724":27400,"GM1728":49300,"GM1729":42900,"GM1730":71400,"GM1731":70100,"GM1734":54500,"GM1735":28600,"GM1740":20400,"GM1742":49000,"GM1771":66400,"GM1773":27500,"GM1774":57100,"GM1783":38600,"GM1784":33300,"GM1842":50800,"GM1859":45800,"GM1876":40300,"GM1883":27200,"GM1884":52700,"GM1891":38700,"GM1892":23600,"GM1894":50700,"GM1895":34700,"GM1896":58700,"GM1900":30800,"GM1901":26700,"GM1903":58300,"GM1904":55100,"GM1916":30900,"GM1952":47600,"GM1954":39400,"GM1955":49100,"GM1978":24900,"GM1979":60700,"GM1980":49600,"GM1981":49800,"GM1982":57200,"GM1991":79200};
 
 </script>
+
 <script>
 const DE_POP = {
   1: ["Breisgau-Hochschwarzwald", "Baden-Württemberg", 263990],
@@ -1708,10 +1709,10 @@ const DE_POP = {
 
 const GOOGLE_API_KEY = 'AIzaSyDBhNnhYMA73oOQ-e5Xkr4J1SmLYmdOFIo';
 const GEOJSON_URL = 'https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/4_kreise/4_niedrig.geo.json';
-const DE_AVG = 12000;
-const CACHE_KEY = 'gymdata_de_v1';
+const DE_AVG = 10000;
+const CACHE_KEY = 'gymdata_de_v2';
 
-let MAP, geoLayer, dotLayer, geoData=null, gyms=[], mode='opp', loaded=false, searchIndex=[], gymIndex=[];
+let MAP, geoLayer, dotLayer, geoData=null, gyms=[], mode='opp', loaded=false, searchIndex=[];
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
@@ -1778,18 +1779,18 @@ async function startLoad() {
         dbg('ok','Cache geladen: '+cached.gyms.length+' Studios ('+Math.round(age/60000)+' Min. alt)');
         cached = cached;
       } else {
-        dbg('info','Cache abgelaufen, neu laden...');
+        dbg('info','Cache verlopen, opnieuw ophalen...');
         cached = null;
         localStorage.removeItem(cacheKey);
       }
     }
   } catch(e) { cached = null; }
 
-  // GeoJSON: Landkreise Deutschland
+  // GeoJSON: Landkreise Deutschland (isellsoap)
   setP(10,'Schritt 1/3: Kartendaten laden...');
   try {
-    dbg('info','GeoJSON Landkreise laden...');
-    var gr=await fetchWithTimeout(GEOJSON_URL,{mode:'cors'},22000);
+    dbg('info','GeoJSON: Landkreise laden...');
+    var gr=await fetchWithTimeout(GEOJSON_URL,{mode:'cors'},25000);
     if (!gr.ok) throw new Error('HTTP '+gr.status);
     geoData=await gr.json();
     if (geoData&&geoData.features&&geoData.features.length>10){
@@ -1837,11 +1838,14 @@ async function startLoad() {
     var entry=DE_POP[id3];
     var pop=entry?entry[2]:0;
     var name=f.properties.NAME_3||'';
-    if (pop>=20000){
+    var land=entry?entry[1]:'';
+    if (pop>0){
       var c=getCentroid(f);
-      gemeenten.push({name:name,lat:c[0],lon:c[1],pop:pop});
+      gemeenten.push({name:name,land:land,lat:c[0],lon:c[1],pop:pop,id3:id3});
     }
   });
+  // Sorteer op bevolking aflopend zodat grote steden voorrang krijgen
+  gemeenten.sort(function(a,b){return b.pop-a.pop;});
   dbg('info','Google Places: '+gemeenten.length+' Landkreise durchsuchen...');
 
   var seen={};
@@ -1868,13 +1872,13 @@ async function startLoad() {
   }
 
   // FASE 1: Type-based nearby search per gemeente (1 call per gemeente)
-  setP(42,'Phase 1/3: Typ-basierte Suche...');
+  setP(42,'Phase 1/3: Typ-Suche...');
   var batchSize=8;
   for (var bi=0;bi<gemeenten.length;bi+=batchSize){
     var batch=gemeenten.slice(bi,bi+batchSize);
     setP(42+Math.round((bi/gemeenten.length)*20),'Phase 1: Landkreis '+(bi+1)+'/'+gemeenten.length+'...');
     var r1=await Promise.all(batch.map(function(gem){
-      var radius=gem.pop>200000?12000:gem.pop>100000?10000:gem.pop>50000?8000:6000;
+      var radius=gem.pop>1000000?20000:gem.pop>500000?16000:gem.pop>200000?14000:gem.pop>100000?12000:gem.pop>50000?10000:8000;
       return pSearch('https://places.googleapis.com/v1/places:searchNearby',{
         includedTypes:['gym','fitness_center','sports_club','sports_complex','health','yoga_studio','martial_arts_school'],
         maxResultCount:20,
@@ -1891,9 +1895,9 @@ async function startLoad() {
     var batch2=gemeenten.slice(bi2,bi2+batchSize);
     setP(62+Math.round((bi2/gemeenten.length)*18),'Phase 2: Landkreis '+(bi2+1)+'/'+gemeenten.length+'...');
     var r2=await Promise.all(batch2.map(function(gem){
-      var radius=gem.pop>200000?12000:gem.pop>100000?10000:gem.pop>50000?8000:6000;
+      var radius=gem.pop>1000000?20000:gem.pop>500000?16000:gem.pop>200000?14000:gem.pop>100000?12000:gem.pop>50000?10000:8000;
       return pSearch('https://places.googleapis.com/v1/places:searchText',{
-        textQuery:'Fitnessstudio Sportzentrum Fitnesscenter Sportclub',
+        textQuery:'Fitnessstudio Sportzentrum Fitnesscenter Gym Sport',
         maxResultCount:20,
         locationBias:{circle:{center:{latitude:gem.lat,longitude:gem.lon},radius:radius}}
       });
@@ -1904,29 +1908,42 @@ async function startLoad() {
 
   // FASE 3: Ketenzoekacties - 5 grote regio-ankers, batches van 3
   setP(80,'Phase 3/3: Ketten-Suche...');
+  // 20 regio-ankers voor volledige DE dekking
   var anchors=[
-    {lat:52.52,lon:13.40,r:45000},  // Berlin
-    {lat:48.14,lon:11.58,r:45000},  // München
-    {lat:53.55,lon:10.00,r:45000},  // Hamburg
-    {lat:51.23,lon:6.79,r:45000},   // Düsseldorf
-    {lat:50.94,lon:6.96,r:45000},   // Köln
-    {lat:50.12,lon:8.68,r:45000},   // Frankfurt
-    {lat:48.78,lon:9.18,r:45000},   // Stuttgart
-    {lat:51.51,lon:7.46,r:45000},   // Dortmund
-    {lat:51.46,lon:7.01,r:45000},   // Essen
-    {lat:53.08,lon:8.80,r:45000},   // Bremen
-    {lat:49.45,lon:11.08,r:45000},  // Nürnberg
-    {lat:51.34,lon:12.38,r:45000},  // Leipzig
-    {lat:51.05,lon:13.74,r:45000},  // Dresden
-    {lat:52.27,lon:10.52,r:45000},  // Braunschweig
-    {lat:47.99,lon:7.85,r:45000},   // Freiburg
+    {lat:52.52,lon:13.40,r:40000},  // Berlin
+    {lat:48.14,lon:11.58,r:40000},  // München
+    {lat:53.55,lon:10.00,r:40000},  // Hamburg
+    {lat:51.23,lon:6.79,r:40000},   // Düsseldorf
+    {lat:50.94,lon:6.96,r:40000},   // Köln
+    {lat:50.12,lon:8.68,r:40000},   // Frankfurt am Main
+    {lat:48.78,lon:9.18,r:40000},   // Stuttgart
+    {lat:51.51,lon:7.46,r:40000},   // Dortmund
+    {lat:49.45,lon:11.08,r:40000},  // Nürnberg
+    {lat:51.34,lon:12.38,r:40000},  // Leipzig
+    {lat:51.05,lon:13.74,r:40000},  // Dresden
+    {lat:53.08,lon:8.80,r:40000},   // Bremen
+    {lat:52.27,lon:10.52,r:40000},  // Braunschweig
+    {lat:47.99,lon:7.85,r:40000},   // Freiburg
+    {lat:48.37,lon:10.90,r:40000},  // Augsburg
+    {lat:49.00,lon:8.40,r:40000},   // Karlsruhe
+    {lat:51.96,lon:7.63,r:40000},   // Münster
+    {lat:52.37,lon:9.73,r:40000},   // Hannover
+    {lat:54.32,lon:10.13,r:40000},  // Kiel
+    {lat:51.78,lon:14.33,r:40000},  // Cottbus/Ostdeutschland
   ];
-  var chains=['McFit','FitX','John Reed','clever fit','EVO Fitness','Injoy','fit+','Anytime Fitness','CLEVERFIT','Fitness First'];
+  // Alle grote ketens in Duitsland (9.000+ locaties totaal)
+  var chains=[
+    'McFit','FitX Fitnessstudio','clever fit','EASYFITNESS',
+    'John Reed Fitness','Kieser Training','LifeFit','Fitness First',
+    'Pfitzenmeier','Mrs. Sporty','Injoy','BestFit','all inclusive fitness',
+    'EVO Fitness','FIT/One','High5 Gym','Sportpark','Wellfit',
+    'Körperformstudio','Bodystreet','Clever fit',
+  ];
   for (var ci=0;ci<chains.length;ci++){
     setP(80+Math.round((ci/chains.length)*10),'Phase 3: '+chains[ci]+'...');
     // Stuur ankers in batches van 2 om rate limiting te vermijden
-    for (var ai=0;ai<anchors.length;ai+=2){
-      var anchorBatch=anchors.slice(ai,ai+2);
+    for (var ai=0;ai<anchors.length;ai+=3){
+      var anchorBatch=anchors.slice(ai,ai+3);
       var chainResults=await Promise.all(anchorBatch.map(function(a){
         return pSearch('https://places.googleapis.com/v1/places:searchText',{
           textQuery:chains[ci],
@@ -2012,12 +2029,17 @@ function computeScores(){
     var c=getCentroid(f);
     var gc=gyms.length>0?countIn(f,c):0;
     if (!pop&&gc>0) pop=gc*DE_AVG;
-    if (!pop) pop=0;
-    f.properties._id3=id3;f.properties._name=name;f.properties._land=land;f.properties._pop=pop;f.properties._gc=gc;
+    f.properties._id3=id3;
+    f.properties._name=name;
+    f.properties._land=land;
+    f.properties._pop=pop;
+    f.properties._gc=gc;
     f.properties._popEst=!entry;
-    var ratio=(pop>=30000&&gc>0)?pop/gc:(pop>=30000&&gc===0?pop*1.5:0);
+    // Inkomen placeholder (Destatis regionaal inkomen 2022 gemiddeld ~€24.000 bruto)
+    f.properties._thuiswerk=0;
+    var ratio=(pop>=20000&&gc>0)?pop/gc:(pop>=20000&&gc===0?pop*1.5:0);
     f.properties._ratio=ratio;
-    if (pop>=30000) ratioMap[id3]=ratio;
+    if (pop>=20000) ratioMap[id3]=ratio;
   });
   var ratios=Object.values(ratioMap).filter(function(r){return r>0;}).sort(function(a,b){return a-b;});
   var len=ratios.length;
@@ -2030,8 +2052,8 @@ function computeScores(){
   geoData.features.forEach(function(f){
     var score=(f.properties._pop||0)>=8000?pct(f.properties._ratio||0):0;
     f.properties._score=score;
-    if (score>70&&(f.properties._pop||0)>50000) opp++;
-    if ((f.properties._gc||0)>15&&score<40) sat++;
+    if (score>70&&(f.properties._pop||0)>40000) opp++;
+    if ((f.properties._gc||0)>12&&score<40) sat++;
   });
   document.getElementById('s-opp').textContent=opp;
   document.getElementById('s-sat').textContent=sat;
@@ -2041,7 +2063,7 @@ function computeScores(){
 function getColor(f){
   var s=f.properties._score||0,p=f.properties._pop||0,g=f.properties._gc||0;
   if (mode==='opp'){
-    if (!p||p<30000) return '#d5d5d5';
+    if (!p||p<20000) return '#d5d5d5';
     if (s>75) return '#1a5c2a';if (s>60) return '#2d8a3e';
     if (s>45) return '#6ab87a';if (s>25) return '#f5c842';
     return '#c0392b';
@@ -2123,7 +2145,7 @@ function setKansenFilter(score) {
 function buildTopList(){
   if (!geoData) return;
   var sorted=geoData.features
-    .filter(function(f){return(f.properties._pop||0)>50000&&(f.properties._score||0)>=kansenMinScore;})
+    .filter(function(f){return(f.properties._pop||0)>40000&&(f.properties._score||0)>=kansenMinScore;})
     .sort(function(a,b){return b.properties._score-a.properties._score;});
   var countEl=document.getElementById('kansen-count');
   if(countEl) countEl.textContent=sorted.length+' gemeenten gevonden';
@@ -2351,7 +2373,7 @@ function exportList(){
     +'@media print{button{display:none}}'
     +'</style></head><body>'
     +'<h1>Fit+ Gym White Space Analyse</h1>'
-    +'<p>Top 30 kansen per gemeente — gesorteerd op opportunity score | '+new Date().toLocaleDateString('de-DE')+'</p>'
+    +'<p>Top 30 kansen per gemeente — gesorteerd op opportunity score | '+new Date().toLocaleDateString('nl-NL')+'</p>'
     +'<button onclick="window.print()">Afdrukken / Opslaan als PDF</button>'
     +'<table><thead><tr><th>#</th><th>Gemeente</th><th>Inwoners</th><th>Gyms</th><th>Inw/gym</th><th>Score</th><th>Bestaande sportscholen</th></tr></thead>'
     +'<tbody>'+rows+'</tbody></table></body></html>');
@@ -2381,7 +2403,7 @@ function showGemPanel(feature) {
   var gc = p._gc || 0;
   var iwg = gc > 0 ? Math.round(pop/gc).toLocaleString('de-DE') : '–';
   var scoreColor = s>=75?'#1a5c2a':s>=45?'#e07820':'#c0392b';
-  var scoreLabel = s>=75?'Hohe Chance':s>=60?'Gut':s>=45?'Mittel':s>=25?'Gering':'Gesättigt';
+  var scoreLabel = s>=75?'Hohe Chance':s>=60?'Goed':s>=45?'Mittel':s>=25?'Gering':'Verzadigd';
 
   document.getElementById('gem-panel-title').textContent = p._name;
   document.getElementById('gem-panel-meta').textContent = pop.toLocaleString('de-DE') + ' Einwohner · ' + gc + ' Studios gefunden';
