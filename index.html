@@ -1829,6 +1829,7 @@ async function startLoad() {
   // ── CACHE HIT: laad direct, sla Places over ───────────────────
   if (cached) {
     gyms = cached.gyms;
+    if (dotLayer) dotLayer.clearLayers();
     gyms.forEach(function(g) {
       L.circleMarker([g.lat, g.lon], {radius:4, fillColor:'#00A550', color:'#fff', weight:1.5, fillOpacity:.9})
         .bindPopup('<b>' + g.name + '</b>').addTo(dotLayer);
@@ -1931,7 +1932,19 @@ async function startLoad() {
     }
   }
 
-  dbg('ok', 'Studios geladen: ' + gyms.length);
+  // Filter: verwijder studios buiten Duitsland (grens-cel artefacten)
+  var beforeFilter = gyms.length;
+  gyms = gyms.filter(function(g) {
+    return g.lat >= 47.2 && g.lat <= 55.2 && g.lon >= 5.8 && g.lon <= 15.2;
+  });
+  // Rebuild dots: verwijder alle huidige dots en teken opnieuw
+  if (dotLayer) dotLayer.clearLayers();
+  gyms.forEach(function(g) {
+    L.circleMarker([g.lat,g.lon],{radius:4,fillColor:'#00A550',color:'#fff',weight:1.5,fillOpacity:.9})
+      .bindPopup('<b>'+g.name+'</b>').addTo(dotLayer);
+  });
+  document.getElementById('s-gyms').textContent = gyms.length;
+  dbg('ok', 'Studios geladen: ' + gyms.length + ' (gefiltert: ' + (beforeFilter-gyms.length) + ' buiten DE)');
 
   // Cache opslaan
   try {
@@ -1958,10 +1971,10 @@ async function startLoad() {
 function assignGymsToKreise() {
   if (!geoData || !gyms.length) return;
   geoData.features.forEach(function(f) {
-    var c = getCentroid(f);
+    var bb = getFeatureBBox(f.geometry);
     var names = [];
     gyms.forEach(function(g) {
-      if (Math.abs(g.lat-c[0]) > 0.5 || Math.abs(g.lon-c[1]) > 0.7) return;
+      if (g.lat < bb.minLat || g.lat > bb.maxLat || g.lon < bb.minLon || g.lon > bb.maxLon) return;
       if (ptIn(g.lon, g.lat, f.geometry)) names.push(g.name);
     });
     f.properties._gymNames = names;
@@ -1989,10 +2002,19 @@ function ptIn(x,y,geom){
   return false;
 }
 
+function getFeatureBBox(geom) {
+  var coords = geom.type==='Polygon' ? geom.coordinates[0] : geom.coordinates.reduce(function(a,p){return a.concat(p[0]);},[]);
+  var lats = coords.map(function(c){return c[1];}), lons = coords.map(function(c){return c[0];});
+  return {minLat:Math.min.apply(null,lats)-0.02, maxLat:Math.max.apply(null,lats)+0.02,
+          minLon:Math.min.apply(null,lons)-0.03, maxLon:Math.max.apply(null,lons)+0.03};
+}
+
 function countIn(f,c){
+  var bb = getFeatureBBox(f.geometry);
   return gyms.filter(function(g){
-    if (Math.abs(g.lat-c[0])>.3||Math.abs(g.lon-c[1])>.4) return false;
-    return ptIn(g.lon,g.lat,f.geometry);
+    // Snelle bbox pre-check (met kleine buffer voor grensgevallen)
+    if (g.lat < bb.minLat || g.lat > bb.maxLat || g.lon < bb.minLon || g.lon > bb.maxLon) return false;
+    return ptIn(g.lon, g.lat, f.geometry);
   }).length;
 }
 
