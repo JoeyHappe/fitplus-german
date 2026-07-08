@@ -1712,9 +1712,10 @@ const GEOJSON_URL = 'https://raw.githubusercontent.com/isellsoap/deutschlandGeoJ
 const DE_AVG = 10000;
 const CACHE_KEY = 'gymdata_de_v3';
 
-// 40km grid over heel Duitsland (374 cellen) voor volledige dekking
+// 20km grid over heel Duitsland (1452 cellen, radius 14km, locationRestriction)
+// Kleiner grid = minder overlap = meer unieke locaties per cel
 const DE_GRID = (function(){
-  var g=[], slat=40/111, slon=40/71;
+  var g=[], slat=20/111, slon=20/71;
   for(var la=47.3;la<55.1;la+=slat)
     for(var lo=5.9;lo<15.1;lo+=slon)
       g.push([+(la+slat/2).toFixed(4), +(lo+slon/2).toFixed(4)]);
@@ -1857,7 +1858,8 @@ async function startLoad() {
     (places||[]).forEach(function(p) {
       if (!p.location) return;
       var lat = p.location.latitude, lon = p.location.longitude;
-      var key = Math.round(lat*10000) + '_' + Math.round(lon*10000);
+      // Deduplicatie op 100m nauwkeurigheid
+      var key = Math.round(lat*1000) + '_' + Math.round(lon*1000);
       if (seen[key]) return;
       seen[key] = true;
       var name = (p.displayName && p.displayName.text) || 'Fitnessstudio';
@@ -1871,64 +1873,61 @@ async function startLoad() {
   function pSearch(url, body) {
     return fetchWithTimeout(url, {
       method:'POST', mode:'cors', headers:headers, body:JSON.stringify(body)
-    }, 12000)
+    }, 15000)
     .then(function(r) { return r.ok ? r.json().then(function(d) { return d.places||[]; }) : []; })
     .catch(function() { return []; });
   }
 
-  var BATCH = 10;
+  var BATCH = 15; // 15 parallel calls per batch
 
-  // FASE 1: Grid type-search — pakt ~7.000+ gym/fitness_center locaties
-  setP(10, 'Phase 1/3: Grid-Suche (Typ)...');
+  // FASE 1: Grid type-search met locationRestriction (strikt binnen de cirkel)
+  // Geeft max 20 fitness-type locaties per 14km cel → ~1452*20*0.45 = ~13.000 uniek
+  setP(10, 'Phase 1/3: Grid type-Suche (' + DE_GRID.length + ' Zellen)...');
   for (var bi = 0; bi < DE_GRID.length; bi += BATCH) {
-    setP(10 + Math.round((bi/DE_GRID.length)*30), 'Phase 1: Zelle ' + (bi+1) + '/' + DE_GRID.length + '...');
+    setP(10 + Math.round((bi/DE_GRID.length)*30), 'Phase 1: ' + (bi+1) + '/' + DE_GRID.length);
     var r1 = await Promise.all(DE_GRID.slice(bi, bi+BATCH).map(function(cell) {
       return pSearch('https://places.googleapis.com/v1/places:searchNearby', {
         includedTypes: ['gym','fitness_center','sports_club','health','yoga_studio','physical_fitness_program'],
         maxResultCount: 20,
-        locationRestriction: {circle:{center:{latitude:cell[0],longitude:cell[1]},radius:28000}}
+        locationRestriction: {circle:{center:{latitude:cell[0],longitude:cell[1]},radius:14000}}
       });
     }));
     r1.forEach(function(places) { addPlaces(places); });
-    await new Promise(function(res) { setTimeout(res, 100); });
+    await new Promise(function(res) { setTimeout(res, 80); });
   }
 
-  // FASE 2: Grid text-search — pakt nieuwe/ongetagde studios (bijv. 'fiteys')
-  setP(40, 'Phase 2/3: Grid-Suche (Text)...');
+  // FASE 2: Grid text-search 'Fitnessstudio' met locationRestriction
+  // Pakt ongetagde studios die NIET als gym/fitness_center staan (bijv. fiteys, boutique studios)
+  setP(40, 'Phase 2/3: Grid text-Suche (' + DE_GRID.length + ' Zellen)...');
   for (var bi2 = 0; bi2 < DE_GRID.length; bi2 += BATCH) {
-    setP(40 + Math.round((bi2/DE_GRID.length)*25), 'Phase 2: Zelle ' + (bi2+1) + '/' + DE_GRID.length + '...');
+    setP(40 + Math.round((bi2/DE_GRID.length)*25), 'Phase 2: ' + (bi2+1) + '/' + DE_GRID.length);
     var r2 = await Promise.all(DE_GRID.slice(bi2, bi2+BATCH).map(function(cell) {
       return pSearch('https://places.googleapis.com/v1/places:searchText', {
-        textQuery: 'Fitnessstudio Sportzentrum Gym',
+        textQuery: 'Fitnessstudio',
         maxResultCount: 20,
-        locationBias: {circle:{center:{latitude:cell[0],longitude:cell[1]},radius:28000}}
+        locationRestriction: {rectangle:{low:{latitude:cell[0]-0.09,longitude:cell[1]-0.14},high:{latitude:cell[0]+0.09,longitude:cell[1]+0.14}}}
       });
     }));
     r2.forEach(function(places) { addPlaces(places); });
-    await new Promise(function(res) { setTimeout(res, 100); });
+    await new Promise(function(res) { setTimeout(res, 80); });
   }
 
-  // FASE 3: Keten-specifieke zoekopdrachten in 50 steden (dekt alle grote ketens)
+  // FASE 3: Ketens die NIET als gym/fitness_center getagd zijn
+  // Basic-Fit (soms als other), Kieser (physical_therapist), Mrs. Sporty, Bodystreet (EMS)
   setP(65, 'Phase 3/3: Ketten-Suche...');
-  var hardChains = [
-    'Basic-Fit', 'Kieser Training', 'Mrs. Sporty', 'Bodystreet',
-    'McFit', 'FitX', 'clever fit', 'EASYFITNESS', 'John Reed',
-    'LifeFit', 'Fitness First', 'all inclusive fitness', 'Pfitzenmeier',
-    'INJOY Fitness', 'EVO Fitness', 'FIT/One',
-  ];
-  var CITY_BATCH = 5;
+  var hardChains = ['Basic-Fit', 'Kieser Training', 'Mrs. Sporty', 'Bodystreet EMS'];
   for (var ci = 0; ci < hardChains.length; ci++) {
-    setP(65 + Math.round((ci/hardChains.length)*20), 'Phase 3: ' + hardChains[ci] + '...');
-    for (var ai = 0; ai < DE_CITIES.length; ai += CITY_BATCH) {
-      var cr = await Promise.all(DE_CITIES.slice(ai, ai+CITY_BATCH).map(function(city) {
+    setP(65 + Math.round((ci/hardChains.length)*20), 'Phase 3: ' + hardChains[ci]);
+    for (var bi3 = 0; bi3 < DE_GRID.length; bi3 += BATCH) {
+      var r3 = await Promise.all(DE_GRID.slice(bi3, bi3+BATCH).map(function(cell) {
         return pSearch('https://places.googleapis.com/v1/places:searchText', {
           textQuery: hardChains[ci],
           maxResultCount: 20,
-          locationBias: {circle:{center:{latitude:city[0],longitude:city[1]},radius:60000}}
+          locationRestriction: {rectangle:{low:{latitude:cell[0]-0.09,longitude:cell[1]-0.14},high:{latitude:cell[0]+0.09,longitude:cell[1]+0.14}}}
         });
       }));
-      cr.forEach(function(places) { addPlaces(places); });
-      await new Promise(function(res) { setTimeout(res, 130); });
+      r3.forEach(function(places) { addPlaces(places); });
+      await new Promise(function(res) { setTimeout(res, 80); });
     }
   }
 
