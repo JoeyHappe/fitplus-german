@@ -1022,6 +1022,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
       </div>
       <div class="sec">
         <div class="stitle">Ebenen</div>
+        <div class="tr"><span style="color:#00A550;font-weight:600;">✦ fit+ Clubs</span><label class="tgl"><input type="checkbox" id="tog-fitplus" checked onchange="toggleFitplus(this)"><span class="ts"></span></label></div>
         <div class="tr">Studio-Punkte<label class="tgl"><input type="checkbox" id="tog-dots" onchange="toggleDots(this)"><span class="ts"></span></label></div>
         <div class="tr">Landkreis-Namen<label class="tgl"><input type="checkbox" id="tog-names" onchange="toggleNames(this)"><span class="ts"></span></label></div>
       </div>
@@ -1712,6 +1713,278 @@ const GEOJSON_URL = 'https://raw.githubusercontent.com/isellsoap/deutschlandGeoJ
 const DE_AVG = 10000;
 const CACHE_KEY = 'gymdata_de_v3';
 
+// ══ FIT+ VASTE LOCATIES (280+ DE clubs van fitplus-club.de) ══
+const FITPLUS_DE = [
+  [48.569,7.849,"fit+ Auenheim"],
+  [48.539,7.967,"fit+ Appenweier"],
+  [48.792,8.438,"fit+ Bad Herrenalb"],
+  [48.777,8.73,"fit+ Bad Liebenzell"],
+  [49.217,8.657,"fit+ Bad Schönborn"],
+  [48.499,8.373,"fit+ Baiersbronn"],
+  [48.962,8.337,"fit+ Bietigheim Baden"],
+  [49.561,8.711,"fit+ Birkenau"],
+  [47.839,8.53,"fit+ Blumberg"],
+  [51.236,6.163,"fit+ Bracht Brüggen"],
+  [50.282,9.095,"fit+ Büdingen-Düdelsheim"],
+  [49.642,8.456,"fit+ Bürstadt"],
+  [48.396,9.49,"fit+ Buttenhausen"],
+  [50.148,7.167,"fit+ Cochem"],
+  [49.408,8.185,"fit+ Deidesheim"],
+  [48.701,9.267,"fit+ Denkendorf BW"],
+  [48.693,9.816,"fit+ Donzdorf"],
+  [49.466,8.992,"fit+ Eberbach"],
+  [48.42,10.133,"fit+ Elchingen"],
+  [48.172,8.065,"fit+ Elzach"],
+  [50.156,7.556,"fit+ Emmelshausen"],
+  [48.141,7.699,"fit+ Endingen"],
+  [47.857,8.774,"fit+ Engen"],
+  [49.136,8.913,"fit+ Eppingen"],
+  [48.796,10.038,"fit+ Essingen"],
+  [48.052,8.21,"fit+ Furtwangen"],
+  [48.618,10.028,"fit+ Gerstetten"],
+  [48.597,9.66,"fit+ Gosbach"],
+  [49.282,9.157,"fit+ Gundelsheim"],
+  [48.551,10.372,"fit+ Gundelfingen an der Donau"],
+  [48.624,10.178,"fit+ Herbrechtingen"],
+  [47.769,8.776,"fit+ Hilzingen"],
+  [48.37,10.308,"fit+ Ichenhausen"],
+  [49.048,8.927,"fit+ Illingen BW"],
+  [50.074,9.018,"fit+ Kahl am Main"],
+  [48.297,7.801,"fit+ Kappel-Grafenhausen"],
+  [48.552,8.094,"fit+ Kappelrodeck"],
+  [48.694,9.251,"fit+ Kemnat Ostfildern"],
+  [49.145,9.263,"fit+ Kirchheim am Neckar"],
+  [49.701,9.947,"fit+ Kirchheim Unterfranken"],
+  [47.966,7.957,"fit+ Kirchzarten"],
+  [48.459,7.866,"fit+ Lauf Baden"],
+  [48.524,9.897,"fit+ Lonsee"],
+  [48.797,9.692,"fit+ Lorch"],
+  [49.087,9.56,"fit+ Mainhardt"],
+  [48.882,8.343,"fit+ Malsch"],
+  [49.513,8.279,"fit+ Maxdorf"],
+  [47.693,9.272,"fit+ Meersburg"],
+  [48.055,9.328,"fit+ Mengen"],
+  [48.187,8.963,"fit+ Meßstetten"],
+  [48.681,9.263,"fit+ Neuhausen auf den Fildern"],
+  [48.528,8.078,"fit+ Oberkirch"],
+  [49.353,9.049,"fit+ Obrigheim"],
+  [48.489,10.367,"fit+ Offingen"],
+  [48.343,7.778,"fit+ Ottenheim Schwanau"],
+  [48.962,8.54,"fit+ Pfinztal"],
+  [49.233,8.455,"fit+ Philippsburg"],
+  [48.705,9.239,"fit+ Plieningen Stuttgart"],
+  [48.421,8.892,"fit+ Rangendingen"],
+  [48.869,9.268,"fit+ Remseck am Neckar"],
+  [49.25,9.993,"fit+ Rot am See"],
+  [48.227,9.552,"fit+ Rottenacker"],
+  [47.765,9.298,"fit+ Salem"],
+  [48.324,8.249,"fit+ Schenkenzell"],
+  [51.051,14.589,"fit+ Schirgiswalde-Kirschau"],
+  [47.788,7.895,"fit+ Schönau im Schwarzwald"],
+  [49.06,8.048,"fit+ Schweigen-Rechtenbach"],
+  [48.8,9.798,"fit+ Schwäbisch Gmünd Lady"],
+  [48.316,7.925,"fit+ Seelbach"],
+  [49.251,8.897,"fit+ Sinsheim-Dühren"],
+  [47.906,8.225,"fit+ Titisee-Neustadt"],
+  [49.244,8.519,"fit+ Waghäusel"],
+  [49.573,8.839,"fit+ Wald-Michelbach"],
+  [48.923,8.472,"fit+ Waldbronn"],
+  [49.586,9.37,"fit+ Walldürn"],
+  [48.748,8.87,"fit+ Weil der Stadt"],
+  [48.056,8.898,"fit+ Wehingen"],
+  [49.149,9.29,"fit+ Weinsberg"],
+  [48.303,10.162,"fit+ Weißenhorn"],
+  [49.046,8.256,"fit+ Wörth am Rhein"],
+  [49.076,8.909,"fit+ Zaberfeld"],
+  [47.705,7.857,"fit+ Zell im Wiesental"],
+  [48.236,9.463,"fit+ Zwiefalten"],
+  [47.995,11.972,"fit+ Aßling"],
+  [47.959,11.786,"fit+ Aying"],
+  [47.862,11.946,"fit+ Bad Aibling"],
+  [49.178,12.852,"fit+ Bad Kötzting"],
+  [47.548,10.338,"fit+ Blaichach"],
+  [48.912,12.692,"fit+ Bogen"],
+  [49.245,12.345,"fit+ Bruck i.d.OPf."],
+  [48.28,10.181,"fit+ Buch Bayern"],
+  [48.958,11.44,"fit+ Denkendorf Bayern"],
+  [48.381,10.771,"fit+ Diedorf"],
+  [48.649,12.751,"fit+ Eichendorf"],
+  [48.706,13.285,"fit+ Eging am See"],
+  [47.905,11.898,"fit+ Feldkirchen-Westerham"],
+  [48.533,12.527,"fit+ Frontenhausen"],
+  [48.735,11.387,"fit+ Großmehring"],
+  [47.745,11.836,"fit+ Hausham"],
+  [48.556,11.43,"fit+ Hohenwart Bayern"],
+  [48.862,10.698,"fit+ Huisheim"],
+  [47.773,11.073,"fit+ Huglfing"],
+  [47.564,10.22,"fit+ Immenstadt im Allgäu"],
+  [48.089,10.873,"fit+ Kaufering"],
+  [47.726,10.318,"fit+ Kempten Lady"],
+  [50.611,12.517,"fit+ Kirchberg Sachsen"],
+  [48.372,11.192,"fit+ Kühbach"],
+  [48.261,12.053,"fit+ Niederlern"],
+  [49.355,11.295,"fit+ Oberferrieden Burgthann"],
+  [47.797,10.929,"fit+ Peiting"],
+  [48.12,10.427,"fit+ Pfaffenhausen"],
+  [49.392,11.176,"fit+ Pyrbaum"],
+  [47.864,12.378,"fit+ Rimsting"],
+  [49.195,12.523,"fit+ Roding"],
+  [48.337,11.497,"fit+ Röhrmoos"],
+  [49.344,12.527,"fit+ Rötz"],
+  [52.387,10.768,"fit+ Rühen Brechtorf"],
+  [48.601,10.357,"fit+ Syrgenstein"],
+  [48.177,12.608,"fit+ Tüssling"],
+  [48.341,12.256,"fit+ Velden Bayern"],
+  [49.651,10.853,"fit+ Weisendorf"],
+  [48.614,9.54,"fit+ Weilheim an der Teck"],
+  [52.607,13.396,"fit+ Berlin Pankow"],
+  [52.194,12.758,"fit+ Brück Mark"],
+  [52.39,13.755,"fit+ Gosen-Neu Zittau"],
+  [52.413,13.826,"fit+ Grünheide"],
+  [52.534,13.697,"fit+ Neuenhagen Brandenburg"],
+  [51.862,14.407,"fit+ Peitz"],
+  [52.538,12.34,"fit+ Premnitz"],
+  [52.222,13.201,"fit+ Trebbin"],
+  [52.72,14.122,"fit+ Wriezen"],
+  [53.603,9.742,"fit+ Holm SH"],
+  [50.381,6.936,"fit+ Adenau"],
+  [50.446,8.128,"fit+ Elbtal"],
+  [50.317,8.871,"fit+ Florstadt"],
+  [51.004,9.414,"fit+ Frielendorf"],
+  [50.593,8.951,"fit+ Grünberg Hessen"],
+  [51.18,9.365,"fit+ Gudensberg"],
+  [51.027,9.392,"fit+ Homberg Efze"],
+  [49.758,8.655,"fit+ Seeheim-Jugenheim"],
+  [50.433,8.373,"fit+ Weilmünster"],
+  [49.774,10.256,"fit+ Wiesentheid"],
+  [53.777,13.253,"fit+ Altentreptow"],
+  [54.105,11.898,"fit+ Bad Doberan"],
+  [54.118,12.65,"fit+ Bad Sülze"],
+  [53.841,11.982,"fit+ Bützow"],
+  [53.789,11.536,"fit+ Dorf Mecklenburg"],
+  [53.672,13.561,"fit+ Friedland MV"],
+  [53.972,12.719,"fit+ Gnoien"],
+  [54.255,12.263,"fit+ Graal-Müritz"],
+  [54.109,13.043,"fit+ Grimmen"],
+  [54.085,13.314,"fit+ Gützkow"],
+  [53.43,11.188,"fit+ Hagenow"],
+  [54.071,12.073,"fit+ Kritzmow"],
+  [54.148,11.729,"fit+ Kühlungsborn"],
+  [53.917,12.35,"fit+ Laage"],
+  [53.868,11.688,"fit+ Neukloster"],
+  [53.383,11.598,"fit+ Neustadt-Glewe"],
+  [54.019,12.213,"fit+ Roggentin"],
+  [54.059,12.384,"fit+ Sanitz"],
+  [54.516,13.64,"fit+ Sassnitz"],
+  [53.689,12.904,"fit+ Stavenhagen"],
+  [54.028,12.462,"fit+ Tessin MV"],
+  [54.316,8.96,"fit+ Tönning"],
+  [53.516,11.072,"fit+ Wittenburg"],
+  [53.463,13.584,"fit+ Woldegk"],
+  [52.247,9.953,"fit+ Algermissen"],
+  [53.595,8.471,"fit+ Burhave Butjadingen"],
+  [54.308,9.704,"fit+ Fockbek"],
+  [54.377,9.09,"fit+ Friedrichstadt"],
+  [54.314,8.864,"fit+ Garding"],
+  [52.728,10.58,"fit+ Hankensbüttel"],
+  [53.305,7.598,"fit+ Hesel"],
+  [52.596,8.748,"fit+ Kirchdorf"],
+  [52.252,10.818,"fit+ Königslutter am Elm"],
+  [52.538,9.113,"fit+ Landesbergen"],
+  [52.349,10.66,"fit+ Lehre"],
+  [51.703,9.869,"fit+ Moringen"],
+  [52.836,10.288,"fit+ Unterlüß"],
+  [52.458,8.897,"fit+ Warmsen"],
+  [53.258,7.988,"fit+ Wiefelstede"],
+  [51.611,8.344,"fit+ Erwitte"],
+  [51.338,6.335,"fit+ Grefrath"],
+  [50.696,7.68,"fit+ Hamm Sieg"],
+  [50.986,8.107,"fit+ Hilchenbach"],
+  [52.122,7.743,"fit+ Ladbergen"],
+  [51.065,7.498,"fit+ Marienheide"],
+  [52.149,7.196,"fit+ Metelen"],
+  [51.486,8.063,"fit+ Möhnesee"],
+  [51.714,9.009,"fit+ Neuenheerse Bad Driburg"],
+  [52.31,8.493,"fit+ Preußisch Oldendorf"],
+  [50.98,6.836,"fit+ Widdersdorf Köln"],
+  [50.514,7.298,"fit+ Bad Breisig"],
+  [50.403,7.44,"fit+ Bassenheim"],
+  [50.196,6.832,"fit+ Daun"],
+  [50.452,7.537,"fit+ Engers Neuwied"],
+  [49.47,7.797,"fit+ Erfenbach Kaiserslautern"],
+  [50.225,6.655,"fit+ Gerolstein"],
+  [50.637,6.469,"fit+ Heimbach Eifel"],
+  [50.013,6.284,"fit+ Neuerburg"],
+  [50.394,7.34,"fit+ Nickenich"],
+  [49.59,7.144,"fit+ Nohfelden"],
+  [49.521,8.39,"fit+ Oppau Ludwigshafen"],
+  [50.208,6.423,"fit+ Prüm"],
+  [50.46,7.735,"fit+ Ransbach-Baumbach"],
+  [50.514,7.322,"fit+ Rheinbrohl"],
+  [50.998,9.727,"fit+ Rotenburg an der Fulda"],
+  [50.593,6.376,"fit+ Schmidt Eifel"],
+  [49.924,6.679,"fit+ Speicher"],
+  [50.558,7.958,"fit+ Westerburg"],
+  [50.479,7.782,"fit+ Wirges"],
+  [49.44,6.638,"fit+ Merzig"],
+  [49.403,7.164,"fit+ Ottweiler"],
+  [49.536,6.887,"fit+ Wadern"],
+  [51.592,12.588,"fit+ Bad Düben"],
+  [50.857,13.954,"fit+ Bad Gottleuba"],
+  [51.381,14.061,"fit+ Bernsdorf Sachsen"],
+  [51.126,12.492,"fit+ Borna"],
+  [50.887,12.953,"fit+ Borna-Heinersdorf Chemnitz"],
+  [51.331,12.613,"fit+ Brandis"],
+  [51.124,12.808,"fit+ Colditz"],
+  [51.526,12.344,"fit+ Delitzsch"],
+  [50.897,13.667,"fit+ Dippoldiswalde"],
+  [51.122,13.768,"fit+ Dresden-Klotzsche"],
+  [51.003,13.75,"fit+ Dresden-Mockritz"],
+  [50.72,13.135,"fit+ Eppendorf"],
+  [51.003,13.648,"fit+ Freital"],
+  [51.048,12.548,"fit+ Frohburg"],
+  [51.234,12.726,"fit+ Grimma"],
+  [51.156,12.272,"fit+ Groitzsch"],
+  [51.1,12.975,"fit+ Hartha"],
+  [50.67,12.828,"fit+ Jahnsdorf"],
+  [51.274,12.387,"fit+ Markkleeberg"],
+  [51.049,12.293,"fit+ Meuselwitz"],
+  [50.706,12.548,"fit+ Neukirchen-Pleiße"],
+  [51.296,13.108,"fit+ Oschatz"],
+  [51.185,13.823,"fit+ Ottendorf-Okrilla"],
+  [51.047,12.802,"fit+ Rochlitz"],
+  [51.4,12.216,"fit+ Schkeuditz"],
+  [51.378,12.493,"fit+ Taucha"],
+  [50.543,12.308,"fit+ Treuen"],
+  [51.059,13.531,"fit+ Wilsdruff"],
+  [51.369,12.741,"fit+ Wurzen"],
+  [50.625,12.81,"fit+ Zwönitz"],
+  [50.714,12.463,"fit+ Zwickau Niederplanitz"],
+  [51.289,12.065,"fit+ Bad Dürrenberg"],
+  [51.28,11.893,"fit+ Braunsbedra"],
+  [51.724,12.437,"fit+ Gräfenhainichen"],
+  [51.156,12.095,"fit+ Hohenmölsen"],
+  [51.78,11.396,"fit+ Hoym"],
+  [51.79,12.974,"fit+ Jessen Elster"],
+  [51.82,12.268,"fit+ Kochstedt Dessau-Roßlau"],
+  [51.681,11.784,"fit+ Könnern"],
+  [51.257,12.14,"fit+ Lützen"],
+  [51.59,11.468,"fit+ Mansfeld"],
+  [52.21,11.859,"fit+ Möser"],
+  [51.154,11.81,"fit+ Naumburg Saale"],
+  [51.476,11.099,"fit+ Roßla"],
+  [52.888,11.752,"fit+ Seehausen Altmark"],
+  [52.438,11.797,"fit+ Tangerhütte"],
+  [53.521,10.62,"fit+ Büchen"],
+  [50.899,11.077,"fit+ Stadtilm"],
+  [50.698,10.539,"fit+ Steinbach-Hallenberg"],
+  [50.647,11.741,"fit+ Triptis"],
+  [51.353,10.031,"fit+ Uder"],
+  [50.656,10.663,"fit+ Zella-Mehlis"],
+];
+
+let fitplusLayer = null; // aparte layer voor fit+ pins
+
 // Grid en steden zijn nu inline in startLoad()
 
 // Verfügbares Einkommen je Einwohner (€/Jahr) — Destatis/BBSR INKAR 2021
@@ -2161,7 +2434,29 @@ document.addEventListener('DOMContentLoaded', function() {
     attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:18
   }).addTo(MAP);
   dotLayer = L.layerGroup();
+  fitplusLayer = L.layerGroup();
+  // Teken fit+ locaties direct bij init als vaste laag
+  renderFitplusPins();
+  fitplusLayer.addTo(MAP);
 });
+
+function renderFitplusPins() {
+  if (!fitplusLayer) return;
+  fitplusLayer.clearLayers();
+  FITPLUS_DE.forEach(function(loc) {
+    var lat = loc[0], lon = loc[1], name = loc[2];
+    // Groen vlag-icoon voor fit+ locaties
+    var icon = L.divIcon({
+      html: '<div style="width:8px;height:8px;background:#00A550;border:1.5px solid #fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.35);" title="'+name+'"></div>',
+      iconSize: [8,8],
+      iconAnchor: [4,4],
+      className: ''
+    });
+    L.marker([lat,lon], {icon:icon})
+      .bindPopup('<div style="font-size:12px;"><b style="color:#00A550;">✦ fit+</b><br><b>'+name+'</b><br><span style="font-size:10px;color:#666;">Bestehender fit+ Club</span></div>')
+      .addTo(fitplusLayer);
+  });
+}
 
 // ── TABS ──────────────────────────────────────────────────────────────────
 function showTab(name) {
@@ -2246,7 +2541,7 @@ async function startLoad() {
     gyms = cached.gyms;
     if (dotLayer) dotLayer.clearLayers();
     gyms.forEach(function(g) {
-      L.circleMarker([g.lat,g.lon],{radius:4,fillColor:'#00A550',color:'#fff',weight:1.5,fillOpacity:.9})
+      L.circleMarker([g.lat,g.lon],{radius:2,fillColor:'#00A550',color:'#fff',weight:1,fillOpacity:.8})
         .bindPopup('<b>'+g.name+'</b>').addTo(dotLayer);
     });
     document.getElementById('s-gyms').textContent = gyms.length;
@@ -2273,7 +2568,7 @@ async function startLoad() {
     seen[key] = true;
     name = name||'Fitnessstudio';
     gyms.push({lat:lat,lon:lon,name:name});
-    L.circleMarker([lat,lon],{radius:4,fillColor:'#00A550',color:'#fff',weight:1.5,fillOpacity:.9})
+    L.circleMarker([lat,lon],{radius:2,fillColor:'#00A550',color:'#fff',weight:1,fillOpacity:.8})
       .bindPopup('<b>'+name+'</b>').addTo(dotLayer);
     document.getElementById('s-gyms').textContent = gyms.length;
   }
@@ -2326,8 +2621,7 @@ async function startLoad() {
   dbg('ok','OSM geladen: '+gyms.length+' Studios');
 
   // ══ FASE 2: GOOGLE PLACES — aanvulling voor locaties die OSM mist ══
-  // Ketens die slecht gedocumenteerd zijn in OSM maar wel in Google staan
-  setP(53,'Phase 2/2: Google Places aanvulling...');
+  setP(53,'Phase 2/2: Google Places...');
 
   var headers = {
     'Content-Type':'application/json',
@@ -2341,17 +2635,24 @@ async function startLoad() {
       .catch(function(){return [];});
   }
 
-  // Grid 25km, radius 20km voor volledige dekking zonder gaten
+  function addPlacesResult(places) {
+    (places||[]).forEach(function(p){
+      if(!p.location) return;
+      addGym(p.location.latitude, p.location.longitude, p.displayName&&p.displayName.text);
+    });
+  }
+
+  // Grid 25km, radius 20km
   var step_lat = 25/111, step_lon = 25/71, BATCH=15;
   var grid25=[];
   for(var la=47.3;la<55.1;la+=step_lat)
     for(var lo=5.9;lo<15.1;lo+=step_lon)
       grid25.push([+(la+step_lat/2).toFixed(4), +(lo+step_lon/2).toFixed(4)]);
 
-  dbg('info','Google Places: '+grid25.length+' cellen...');
-
+  // Fase 2a: type-search op grid
+  dbg('info','Google Places fase 2a: '+grid25.length+' cellen type-search...');
   for (var gi=0; gi<grid25.length; gi+=BATCH) {
-    setP(53+Math.round((gi/grid25.length)*30), 'Phase 2: Zelle '+(gi+1)+'/'+grid25.length);
+    setP(53+Math.round((gi/grid25.length)*15), 'Phase 2a: Zelle '+(gi+1)+'/'+grid25.length);
     var r1 = await Promise.all(grid25.slice(gi,gi+BATCH).map(function(cell){
       return pSearch('https://places.googleapis.com/v1/places:searchNearby',{
         includedTypes:['gym','fitness_center','sports_club'],
@@ -2359,16 +2660,55 @@ async function startLoad() {
         locationRestriction:{circle:{center:{latitude:cell[0],longitude:cell[1]},radius:20000}}
       });
     }));
-    r1.forEach(function(places){
-      (places||[]).forEach(function(p){
-        if(!p.location) return;
-        addGym(p.location.latitude, p.location.longitude, p.displayName&&p.displayName.text);
-      });
-    });
+    r1.forEach(addPlacesResult);
     await new Promise(function(res){setTimeout(res,80);});
   }
+  dbg('info','Na fase 2a: '+gyms.length+' studios');
 
-  dbg('ok','Totaal na Google aanvulling: '+gyms.length+' Studios');
+  // Fase 2b: fit+ specifiek — personaalsloos, kleine steden, slecht in OSM/Google type
+  // fit+ heeft ~180 DE locaties, maar Google indexeert ze niet als gym type
+  // Oplossing: zoek direct op naam "fit+" over het hele grid
+  dbg('info','Google Places fase 2b: fit+ keten-zoekopdracht...');
+  var fitplusTerms = ['fit+ Fitnessstudio','fit plus Fitnessstudio','fit+ Studio'];
+  for (var fi=0; fi<fitplusTerms.length; fi++) {
+    for (var gi2=0; gi2<grid25.length; gi2+=BATCH) {
+      setP(68+Math.round((gi2/grid25.length)*7), 'Phase 2b: fit+ '+(gi2+1)+'/'+grid25.length);
+      var r2 = await Promise.all(grid25.slice(gi2,gi2+BATCH).map(function(cell){
+        return pSearch('https://places.googleapis.com/v1/places:searchText',{
+          textQuery: fitplusTerms[fi],
+          maxResultCount:20,
+          locationRestriction:{circle:{center:{latitude:cell[0],longitude:cell[1]},radius:20000}}
+        });
+      }));
+      r2.forEach(addPlacesResult);
+      await new Promise(function(res){setTimeout(res,80);});
+    }
+  }
+  dbg('info','Na fase 2b (fit+): '+gyms.length+' studios');
+
+  // Fase 2c: andere ketens die slecht in OSM staan
+  var hardChains = [
+    'McFit Fitnessstudio','FitX Fitnessstudio','clever fit Fitnessstudio',
+    'EASYFITNESS Fitnessstudio','John Reed Fitness','Kieser Training',
+    'Mrs. Sporty','Bodystreet EMS','INJOY Fitness','Pfitzenmeier'
+  ];
+  var CBATCH = 20;
+  for (var ci=0; ci<hardChains.length; ci++) {
+    setP(75+Math.round((ci/hardChains.length)*8), 'Phase 2c: '+hardChains[ci]);
+    for (var gi3=0; gi3<grid25.length; gi3+=CBATCH) {
+      var r3 = await Promise.all(grid25.slice(gi3,gi3+CBATCH).map(function(cell){
+        return pSearch('https://places.googleapis.com/v1/places:searchText',{
+          textQuery: hardChains[ci],
+          maxResultCount:20,
+          locationRestriction:{circle:{center:{latitude:cell[0],longitude:cell[1]},radius:20000}}
+        });
+      }));
+      r3.forEach(addPlacesResult);
+      await new Promise(function(res){setTimeout(res,60);});
+    }
+  }
+
+  dbg('ok','Totaal na Google: '+gyms.length+' Studios');
 
   // ── CACHE OPSLAAN ────────────────────────────────────────────────────────
   try {
@@ -2532,26 +2872,15 @@ function setMode(m){
   var activeEl=document.getElementById('btn-'+m);
   if(activeEl) activeEl.classList.add('active');
   var legends={
-    opp:'<div class="li"><div class="sw" style="background:#1a5c2a"></div>Hoge kans (&gt;75)</div><div class="li"><div class="sw" style="background:#2d8a3e"></div>Goed (60–75)</div><div class="li"><div class="sw" style="background:#6ab87a"></div>Gemiddeld (45–60)</div><div class="li"><div class="sw" style="background:#f5c842"></div>Laag (25–45)</div><div class="li"><div class="sw" style="background:#c0392b"></div>Verzadigd (&lt;25)</div><div class="li"><div class="sw" style="background:#d5d5d5"></div>Te kleine gemeente</div>',
-    pop:'<div class="li"><div class="sw" style="background:#08519c"></div>&gt;300k inw.</div><div class="li"><div class="sw" style="background:#4292c6"></div>75–150k</div><div class="li"><div class="sw" style="background:#deebf7;border:1px solid #ccc"></div>15–40k</div>',
-    gym:'<div class="li"><div class="sw" style="background:#b84c00"></div>&gt;20 gyms (verzadigd)</div><div class="li"><div class="sw" style="background:#e06820"></div>11–20 gyms</div><div class="li"><div class="sw" style="background:#f5a050"></div>4–10 gyms</div><div class="li"><div class="sw" style="background:#fad4a8"></div>1–3 gyms</div><div class="li"><div class="sw" style="background:#f5f5f5;border:1px solid #ddd"></div>Geen gym</div>',
-    inkomen:'<div class="li"><div class="sw" style="background:#006d2c"></div>&gt;€45.000 (hoog)</div><div class="li"><div class="sw" style="background:#31a354"></div>€40–45k</div><div class="li"><div class="sw" style="background:#74c476"></div>€36–40k (gem.)</div><div class="li"><div class="sw" style="background:#bae4b3"></div>€33–36k</div><div class="li"><div class="sw" style="background:#edf8e9;border:1px solid #ccc"></div>&lt;€33k</div>'
+    opp:'<div class="li"><div class="sw" style="background:#1a5c2a"></div>Hohe Chance (&gt;75)</div><div class="li"><div class="sw" style="background:#2d8a3e"></div>Gut (60–75)</div><div class="li"><div class="sw" style="background:#6ab87a"></div>Mittel (45–60)</div><div class="li"><div class="sw" style="background:#f5c842"></div>Gering (25–45)</div><div class="li"><div class="sw" style="background:#c0392b"></div>Gesättigt (&lt;25)</div><div class="li"><div class="sw" style="background:#d5d5d5"></div>Keine Daten</div>',
+    pop:'<div class="li"><div class="sw" style="background:#08519c"></div>&gt;500k Einw.</div><div class="li"><div class="sw" style="background:#2171b5"></div>200–500k</div><div class="li"><div class="sw" style="background:#4292c6"></div>100–200k</div><div class="li"><div class="sw" style="background:#9ecae1"></div>50–100k</div><div class="li"><div class="sw" style="background:#deebf7;border:1px solid #ccc"></div>&lt;50k</div>',
+    gym:'<div class="li"><div class="sw" style="background:#b84c00"></div>&gt;30 Studios</div><div class="li"><div class="sw" style="background:#e06820"></div>16–30 Studios</div><div class="li"><div class="sw" style="background:#f5a050"></div>5–15 Studios</div><div class="li"><div class="sw" style="background:#fad4a8"></div>1–4 Studios</div><div class="li"><div class="sw" style="background:#f5f5f5;border:1px solid #ddd"></div>Kein Studio</div>',
+    inkomen:'<div class="li"><div class="sw" style="background:#006d2c"></div>&gt;€30.000 (hoog)</div><div class="li"><div class="sw" style="background:#31a354"></div>€26–30k</div><div class="li"><div class="sw" style="background:#74c476"></div>€23–26k (gem.)</div><div class="li"><div class="sw" style="background:#bae4b3"></div>€21–23k</div><div class="li"><div class="sw" style="background:#edf8e9;border:1px solid #ccc"></div>&lt;€21k</div>'
   };
   document.getElementById('legend').innerHTML=legends[m]||legends.opp;
   if (geoData) renderMap();
 }
 
-function toggleDots(el){ el.checked?dotLayer.addTo(MAP):MAP.removeLayer(dotLayer); }
-function toggleNames(el){
-  if (!geoLayer) return;
-  geoLayer.eachLayer(function(layer){
-    if (el.checked&&layer.feature&&layer.feature.properties._name) layer.bindTooltip(layer.feature.properties._name,{permanent:true,direction:'center'});
-    else layer.unbindTooltip();
-  });
-}
-
-// ── TOP KANSEN ────────────────────────────────────────────────────────────
-var kansenMinScore = 50;
 
 function setKansenFilter(score) {
   kansenMinScore = score;
@@ -2820,31 +3149,42 @@ function showGemPanel(feature) {
   var s = p._score || 0;
   var pop = p._pop || 0;
   var gc = p._gc || 0;
+  var inc = p._thuiswerk || 0;
   var iwg = gc > 0 ? Math.round(pop/gc).toLocaleString('de-DE') : '–';
-  var scoreColor = s>=75?'#1a5c2a':s>=45?'#e07820':'#c0392b';
-  var scoreLabel = s>=75?'Hohe Chance':s>=60?'Goed':s>=45?'Mittel':s>=25?'Gering':'Verzadigd';
+  var scoreColor = s>=75?'#1a5c2a':s>=60?'#2d8a3e':s>=45?'#e07820':'#c0392b';
+  var scoreLabel = s>=75?'Hohe Chance':s>=60?'Gut':s>=45?'Mittel':s>=25?'Gering':'Gesättigt';
 
-  document.getElementById('gem-panel-title').textContent = p._name;
-  document.getElementById('gem-panel-meta').textContent = pop.toLocaleString('de-DE') + ' Einwohner · ' + gc + ' Studios gefunden';
+  document.getElementById('gem-panel-title').textContent = p._name + (p._land?' · '+p._land:'');
+  document.getElementById('gem-panel-meta').textContent =
+    pop.toLocaleString('de-DE') + ' Einw. · ' + gc + ' Studios' + (inc?' · Ø €'+inc.toLocaleString('de-DE'):'');
 
-  var gymTags = (p._gymNames||[]).map(function(n){
-    return '<span class="gp-gym-tag">'+n+'</span>';
-  }).join('') || '<span style="font-size:12px;color:var(--muted);">Geen gyms gevonden in dit gebied</span>';
+  // Gym lijst als checkbare lijst voor verificatie
+  var gymNames = p._gymNames || [];
+  var gymListHtml = gymNames.length > 0
+    ? gymNames.slice(0,30).map(function(n,i) {
+        return '<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f0f0f0;font-size:11px;">'
+          +'<span style="color:#00A550;font-weight:600;">'+(i+1)+'.</span>'
+          +'<span>'+n+'</span>'
+          +'</div>';
+      }).join('')
+      + (gymNames.length > 30 ? '<div style="font-size:10px;color:#999;padding:4px 0;">...en '+(gymNames.length-30)+' meer</div>' : '')
+    : '<div style="font-size:12px;color:#e07820;padding:8px 0;">⚠ Keine Studios gefunden — mogelijk ontbrekende data</div>';
 
   document.getElementById('gem-panel-body').innerHTML =
     '<div class="gp-score-row">'
-      +'<div class="gp-stat"><div class="gp-score-num" style="color:'+scoreColor+';">'+s+'</div><div class="gp-score-label">Opportunity score /100</div></div>'
-      +'<div class="gp-stat"><div class="gp-stat-val">'+gc+'</div><div class="gp-stat-label">Sportscholen</div></div>'
-      +'<div class="gp-stat"><div class="gp-stat-val">'+iwg+'</div><div class="gp-stat-label">Inw. per gym</div></div>'
-      +'<div class="gp-stat"><div class="gp-stat-val" style="color:'+scoreColor+';">'+scoreLabel+'</div><div class="gp-stat-label">Beoordeling</div></div>'
+      +'<div class="gp-stat"><div class="gp-score-num" style="color:'+scoreColor+';">'+s+'</div><div class="gp-score-label">Chance Score /100</div></div>'
+      +'<div class="gp-stat"><div class="gp-stat-val">'+gc+'</div><div class="gp-stat-label">Studios</div></div>'
+      +'<div class="gp-stat"><div class="gp-stat-val">'+iwg+'</div><div class="gp-stat-label">Einw./Studio</div></div>'
+      +'<div class="gp-stat"><div class="gp-stat-val" style="color:'+scoreColor+';">'+scoreLabel+'</div><div class="gp-stat-label">Bewertung</div></div>'
     +'</div>'
-    +'<div class="gp-gyms-title">Gevonden sportscholen in '+p._name+'</div>'
-    +gymTags;
+    +(inc?'<div style="font-size:11px;color:#666;padding:4px 0 8px;">Ø Verfügb. Einkommen: <b>€'+inc.toLocaleString('de-DE')+'</b></div>':'')
+    +'<div class="gp-gyms-title">Gefundene Studios in '+p._name+' ('+gymNames.length+'):</div>'
+    +gymListHtml;
 
   document.getElementById('gem-panel').style.display = 'block';
-  // Resize map to account for panel
   setTimeout(function(){ MAP.invalidateSize(); }, 50);
 }
+
 
 function closeGemPanel() {
   document.getElementById('gem-panel').style.display = 'none';
